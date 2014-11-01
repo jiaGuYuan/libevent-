@@ -96,7 +96,7 @@ extern const struct eventop devpollops;
 extern const struct eventop win32ops;
 #endif
 
-/* Array of backends in order of preference. */
+/* 按后端优先顺序排列的数组Array of backends in order of preference. */
 static const struct eventop *eventops[] = {
 #ifdef EVENT__HAVE_EVENT_PORTS
     &evportops,
@@ -2253,9 +2253,10 @@ int event_base_set(struct event_base *base, struct event *ev)
     return (0);
 }
 
-/*  ev：要设置的event对象；
+/*  设置event对象
+	ev：要设置的event对象；
 	fd：该event绑定的“句柄”，对于信号事件，它就是关注的信号；
-	events：在该fd上关注的事件类型，它可以是EV_READ, EV_WRITE, EV_SIGNAL；
+	events：在该fd上关注的事件类型，它可以是EV_READ, EV_WRITE, EV_SIGNAL, EV_PERSIST；
 	callback：函数指针，当fd上的事件events发生时，调用该函数执行处理，它有三个参数，调用时由event_base负责传入，按顺序，实际上就是event_set时的fd, event和arg；
 	arg：传递给callback函数指针的参数； */
 void event_set(struct event *ev, evutil_socket_t fd, short events,
@@ -2569,6 +2570,9 @@ event_get_priority(const struct event *ev)
     return ev->ev_pri;
 }
 
+/*注册事件
+  参数：ev：指向要注册的事件；
+        tv：超时时间；*/
 int event_add(struct event *ev, const struct timeval *tv)
 {
     int res;
@@ -2684,9 +2688,11 @@ event_remove_timer(struct event *ev)
 /* Implementation function to add an event.  Works just like event_add,
  * except: 1) it requires that we have the lock.  2) if tv_is_absolute is set,
  * we treat tv as an absolute time, not as an interval to add to the current
- * time */
-int
-event_add_nolock_(struct event *ev, const struct timeval *tv,
+ * time
+   添加一个事件。与event_add函数功能相同, 
+   除了:1)event_add要求我们有锁。
+   2)如果tv_is_absolute设置, 我们把tv看作是一个绝对时间,而不是一个与当前时间的间隔 */
+int event_add_nolock_(struct event *ev, const struct timeval *tv,
                   int tv_is_absolute)
 {
     struct event_base *base = ev->ev_base;

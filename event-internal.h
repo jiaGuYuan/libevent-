@@ -206,6 +206,7 @@ extern int event_debug_mode_on_;
 #define EVENT_DEBUG_MODE_IS_ON() (0)
 #endif
 
+//创建一个名为evcallback_list的尾队列头结点结构体
 TAILQ_HEAD(evcallback_list, event_callback);
 
 /* Sets up an event for processing once */
@@ -217,24 +218,21 @@ struct event_once {
 	void *arg;
 };
 
+//用来描述event_base后端的函数指针和其他数据。
 struct event_base {
 
 	/*你可以把evsel和evbase看作是类和静态函数的关系，比如添加事件时的调用行为：evsel->add(evbase, ev)，
 	  实际执行操作的是evbase*/
-	/** Function pointers and other data to describe this event_base's
-	 * backend. */
 	const struct eventop *evsel;//evsel指向了全局变量static const struct eventop *eventops[]中的一个.eventop是对I/O demultiplex机制的封装
-	/** Pointer to backend-specific data. */
-	void *evbase;//实际执行多路复用机制的实例化
+	void *evbase;//指向特定后台数据。实际执行多路复用机制的实例化
 
-	/** List of changes to tell backend about at next dispatch.  Only used
-	 * by the O(1) backends. */
+	/** List of changes to tell backend about at next dispatch.  Only used by the O(1) backends
+ 	    列表的变化告诉后端下一个处理。只使用的O(1)的后端. */
 	struct event_changelist changelist;
 
-	/** Function pointers used to describe the backend that this event_base
-	 * uses for signals */
+	/** 函数指针,用来描述这个event_base使用的后端信号 */
 	const struct eventop *evsigsel;
-	/** Data to implement the common signal handelr code. */
+	/** 数据实现常见的信号处理代码. */
 	struct evsig_info sig;
 
 	/** Number of virtual events */
@@ -271,16 +269,15 @@ struct event_base {
 	 * feature */
 	int n_deferreds_queued;
 
-	/* Active event management. */
-	/** An array of nactivequeues queues for active event_callbacks (ones
-	 * that have triggered, and whose callbacks need to be called).  Low
-	 * priority numbers are more important, and stall higher ones.
-	 */
+	/* 活跃的事件管理. 
+	   由活动的不同优先级的event_callbacks队列组成的数组，数组的每个元素对应一个优先级的队列。
+	   由活动的event_callbacks组成的数组(那些触发的事件,其回调函数需要调用).
+	   其的元素activequeues[priority]是一个队列。
+	   低优先级数据更加重要，并且失速更高*/
 	struct evcallback_list *activequeues;
-	/** The length of the activequeues array */
+	/** activequeues的长度 */
 	int nactivequeues;
-	/** A list of event_callbacks that should become active the next time
-	 * we process events, but not this time. */
+	/** 一个event_callbacks列表,下次我们处理事件应该变得活跃,但这次没有。*/
 	struct evcallback_list active_later_queue;
 
 	/* common timeout logic */
@@ -299,11 +296,10 @@ struct event_base {
 	/** Mapping from signal numbers to enabled (added) events. */
 	struct event_signal_map sigmap;
 
-	/** Priority queue of events with timeouts. */
+	/** 事件与超时的优先队列. */
 	struct min_heap timeheap;
 
-	/** Stored timeval: used to avoid calling gettimeofday/clock_gettime
-	 * too often. */
+	/** 存储timeval:用于避免频繁调用gettimeofday / clock_gettime. */
 	struct timeval tv_cache;
 
 	struct evutil_monotonic_timer monotonic_timer;

@@ -107,9 +107,9 @@ struct event;
 struct event_callback {
     TAILQ_ENTRY(event_callback) evcb_active_next;
     short evcb_flags;
-    ev_uint8_t evcb_pri;	/* smaller numbers are higher priority */
+    ev_uint8_t evcb_pri; /* 优先级:数字越小优先级越大 */
     ev_uint8_t evcb_closure;
-    /* allows us to adopt for different types of events */
+    /* 对不同类型的事件使用不同的处理函数 */
     union {
         void (*evcb_callback)(evutil_socket_t, short, void *);
         void (*evcb_selfcb)(struct event_callback *, void *);
@@ -126,35 +126,35 @@ struct event {
 
     /* 用于管理超时 */
     union {
-        TAILQ_ENTRY(event) ev_next_with_common_timeout;
-        int min_heap_idx;
+        TAILQ_ENTRY(event) ev_next_with_common_timeout;//双向链表节点
+        int min_heap_idx; //timeout事件，在小根堆中的索引
     } ev_timeout_pos;
-    evutil_socket_t ev_fd;
+    evutil_socket_t ev_fd; //对于I/O事件，是绑定的文件描述符；对于signal事件，是绑定的信号
 
-    struct event_base *ev_base;
+    struct event_base *ev_base;//事件所属的反应堆实例
 
     union {
         /* 所使用的IO事件 */
         struct {
-            LIST_ENTRY (event) ev_io_next;
+            LIST_ENTRY (event) ev_io_next;//双向链表节点
             struct timeval ev_timeout;
         } ev_io;
 
         /* 	所使用的信号事件    */
         struct {
-            LIST_ENTRY (event) ev_signal_next;
+            LIST_ENTRY (event) ev_signal_next; //双向链表节点
             short ev_ncalls;
             /* 允许在回调中删除 */
             short *ev_pncalls;
         } ev_signal;
     } ev_;
 
-    //event关注的事件类型。I/O事件： EV_WRITE和EV_READ ;定时事件：EV_TIMEOUT
-    //                     信号：	 EV_SIGNAL;    	   辅助选项：EV_PERSIST，表明是一个永久事件
+    /*event关注的事件类型。
+    I/O事件:EV_WRITE和EV_READ; 定时事件:EV_TIMEOUT; 信号:EV_SIGNAL; 辅助选项：EV_PERSIST，表明是一个永久事件*/
     short ev_events;
 
-    short ev_res;		/* 结果传递给事件回调 */
-    struct timeval ev_timeout;
+    short ev_res;	/* 结果传递给事件回调 */
+    struct timeval ev_timeout; //超时事件的超时值
 };
 
 TAILQ_HEAD (event_list, event);
