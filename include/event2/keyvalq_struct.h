@@ -37,13 +37,15 @@ extern "C" {
 #define EVENT_DEFINED_TQENTRY_
 #define TAILQ_ENTRY(type)						\
 struct {								\
-	struct type *tqe_next;	/* next element */			\
+	struct type *tqe_next;	/* 指向下一个元素 */			\
 	struct type **tqe_prev;	/* address of previous next element */	\
 }
 #endif /* !TAILQ_ENTRY */
 
 #ifndef TAILQ_HEAD
 #define EVENT_DEFINED_TQHEAD_
+
+//用它可以构造类型为name的链表节点(预处理期),type为其节点类型
 #define TAILQ_HEAD(name, type)			\
 struct name {					\
 	struct type *tqh_first;			\
@@ -52,8 +54,7 @@ struct name {					\
 #endif
 
 /*
- * Key-Value pairs.  Can be used for HTTP headers but also for
- * query argument parsing.
+ * Key-Value 对.  可用于HTTP头查询参数解析
  */
 struct evkeyval {
 	TAILQ_ENTRY(evkeyval) next;

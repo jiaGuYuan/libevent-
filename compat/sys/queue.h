@@ -270,65 +270,85 @@ struct {								\
 } while (0)
 
 /*
- * Tail queue definitions.
+ * 尾队列定义
  */
+ //尾队列头节点
 #define TAILQ_HEAD(name, type)						\
 struct name {								\
 	struct type *tqh_first;	/* first element */			\
 	struct type **tqh_last;	/* addr of last next element */		\
 }
 
-#define TAILQ_HEAD_INITIALIZER(head)					\
-	{ NULL, &(head).tqh_first }
+//尾队列头初始化
+#define TAILQ_HEAD_INITIALIZER(head)	{ NULL, &(head).tqh_first }
 
+//尾队列头条目。
+//该结构体是一个匿名结构体。它一般都是另外一个结构体或者共用体的成员  
 #define TAILQ_ENTRY(type)						\
 struct {								\
-	struct type *tqe_next;	/* next element */			\
-	struct type **tqe_prev;	/* address of previous next element */	\
+	struct type *tqe_next;	/* 指向下一个元素 */			\
+	/* 指向上一个元素的tqe_next字段，tqe_next是TAILQ_ENTRY的第一个元素(结构体第一个元素的地址值等于结构体的地址),
+	  所以通过它可以得到前一个节点的地址*/  \
+	struct type **tqe_prev;		\
 }
 
 /*
- * tail queue access methods
+ * 尾队列访问方法
+   操作中需要field参数,是因为我们的队列是包含在业务节点之中的，
+   这个参数对应的就是节点数据结构中的链表字段
+   ---这儿有点像linux的链表
  */
+ //获取队列head的首元素(的地址)
 #define	TAILQ_FIRST(head)		((head)->tqh_first)
 #define	TAILQ_END(head)			NULL
+//根据elm元素的field字段来获取它的下一个节点(的地址),field字段是TAILQ_ENTRY(type)类型的
 #define	TAILQ_NEXT(elm, field)		((elm)->field.tqe_next)
+/*获取队列的最后一个节点(的地址),head为指向队列的头结点的指针,headname是队列头结点的类型名
+  这里利用了TAILQ_HEAD与TAILQ_ENTRY结构的一致性,且tqe_next是TAILQ_ENTRY的第一个元素(结构体第一个元素的地址值等于结构体的地址)*/
 #define TAILQ_LAST(head, headname)					\
 	(*(((struct headname *)((head)->tqh_last))->tqh_last))
 /* XXX */
+/*获取队列的最后一个节点(的地址),head为指向队列的头结点的指针,headname是队列头结点的类型名,field是elm的一个字段，它是TAILQ_ENTRY(type)类型的
+  这里利用了TAILQ_HEAD与TAILQ_ENTRY结构的一致性,且tqe_next是TAILQ_ENTRY的第一个元素(结构体第一个元素的地址值等于结构体的地址)*/
 #define TAILQ_PREV(elm, headname, field)				\
 	(*(((struct headname *)((elm)->field.tqe_prev))->tqh_last))
+//判断队列是否为空
 #define	TAILQ_EMPTY(head)						\
 	(TAILQ_FIRST(head) == TAILQ_END(head))
 
+//遍历队列,
 #define TAILQ_FOREACH(var, head, field)					\
 	for((var) = TAILQ_FIRST(head);					\
 	    (var) != TAILQ_END(head);					\
 	    (var) = TAILQ_NEXT(var, field))
-
+//反向遍历队列
 #define TAILQ_FOREACH_REVERSE(var, head, headname, field)		\
 	for((var) = TAILQ_LAST(head, headname);				\
 	    (var) != TAILQ_END(head);					\
 	    (var) = TAILQ_PREV(var, headname, field))
 
 /*
- * Tail queue functions.
+ 尾队列函数 .
  */
+ //初始化队列头节点,head:指向头节点的指针
 #define	TAILQ_INIT(head) do {						\
 	(head)->tqh_first = NULL;					\
 	(head)->tqh_last = &(head)->tqh_first;				\
 } while (0)
 
+//在队列的头部插入一个元素,
+//head:指向队列头节点的指针,elm:指向要插入的元素,field:elm的插入操作是通过它的这个字段来完成的,它是TAILQ_ENTRY(type)类型的
 #define TAILQ_INSERT_HEAD(head, elm, field) do {			\
 	if (((elm)->field.tqe_next = (head)->tqh_first) != NULL)	\
-		(head)->tqh_first->field.tqe_prev =			\
-		    &(elm)->field.tqe_next;				\
+		(head)->tqh_first->field.tqe_prev =	  &(elm)->field.tqe_next;				\
 	else								\
 		(head)->tqh_last = &(elm)->field.tqe_next;		\
 	(head)->tqh_first = (elm);					\
 	(elm)->field.tqe_prev = &(head)->tqh_first;			\
 } while (0)
 
+//在队列的尾部插入一个元素,
+//head:指向队列头节点的指针,elm:指向要插入的元素,field:插入操作是通过这个字段来完成的,它是TAILQ_ENTRY(type)类型的
 #define TAILQ_INSERT_TAIL(head, elm, field) do {			\
 	(elm)->field.tqe_next = NULL;					\
 	(elm)->field.tqe_prev = (head)->tqh_last;			\
@@ -336,6 +356,7 @@ struct {								\
 	(head)->tqh_last = &(elm)->field.tqe_next;			\
 } while (0)
 
+//在head队列的listelm节点之后插入一个elm节点, field:是elm中包含TAILQ_ENTRY(type)结构的字段
 #define TAILQ_INSERT_AFTER(head, listelm, elm, field) do {		\
 	if (((elm)->field.tqe_next = (listelm)->field.tqe_next) != NULL)\
 		(elm)->field.tqe_next->field.tqe_prev =			\
@@ -346,6 +367,7 @@ struct {								\
 	(elm)->field.tqe_prev = &(listelm)->field.tqe_next;		\
 } while (0)
 
+//在head队列的listelm节点之前插入一个elm节点, field:是elm中包含TAILQ_ENTRY(type)结构的字段
 #define	TAILQ_INSERT_BEFORE(listelm, elm, field) do {			\
 	(elm)->field.tqe_prev = (listelm)->field.tqe_prev;		\
 	(elm)->field.tqe_next = (listelm);				\
@@ -353,6 +375,7 @@ struct {								\
 	(listelm)->field.tqe_prev = &(elm)->field.tqe_next;		\
 } while (0)
 
+//从head队列中移除elm节点, field:是elm中包含TAILQ_ENTRY(type)结构的字段
 #define TAILQ_REMOVE(head, elm, field) do {				\
 	if (((elm)->field.tqe_next) != NULL)				\
 		(elm)->field.tqe_next->field.tqe_prev =			\
@@ -362,6 +385,7 @@ struct {								\
 	*(elm)->field.tqe_prev = (elm)->field.tqe_next;			\
 } while (0)
 
+//将head队列中的elm节点用elm2节点替代, field:是elm中包含TAILQ_ENTRY(type)结构的字段
 #define TAILQ_REPLACE(head, elm, elm2, field) do {			\
 	if (((elm2)->field.tqe_next = (elm)->field.tqe_next) != NULL)	\
 		(elm2)->field.tqe_next->field.tqe_prev =		\
@@ -373,17 +397,20 @@ struct {								\
 } while (0)
 
 /*
- * Circular queue definitions.
+ *循环队列定义。
  */
+ //循环队列头
 #define CIRCLEQ_HEAD(name, type)					\
 struct name {								\
 	struct type *cqh_first;		/* first element */		\
 	struct type *cqh_last;		/* last element */		\
 }
 
+//循环初始化队列头
 #define CIRCLEQ_HEAD_INITIALIZER(head)					\
 	{ CIRCLEQ_END(&head), CIRCLEQ_END(&head) }
 
+//循环队列条目
 #define CIRCLEQ_ENTRY(type)						\
 struct {								\
 	struct type *cqe_next;		/* next element */		\
@@ -391,34 +418,44 @@ struct {								\
 }
 
 /*
- * Circular queue access methods
+ * 循环队列的访问方法
  */
+ //第一个节点
 #define	CIRCLEQ_FIRST(head)		((head)->cqh_first)
+//最后一个节点
 #define	CIRCLEQ_LAST(head)		((head)->cqh_last)
+//结束，用于遍历
 #define	CIRCLEQ_END(head)		((void *)(head))
+//获取节点elm的下一个节点,field是elm结构中包含的CIRCLEQ_ENTRY(type)字段,elm的链由field字段构成
 #define	CIRCLEQ_NEXT(elm, field)	((elm)->field.cqe_next)
+//获取节点elm的前一个节点
 #define	CIRCLEQ_PREV(elm, field)	((elm)->field.cqe_prev)
+//循环队列是否为空
 #define	CIRCLEQ_EMPTY(head)						\
 	(CIRCLEQ_FIRST(head) == CIRCLEQ_END(head))
 
+//遍历循环队列
 #define CIRCLEQ_FOREACH(var, head, field)				\
 	for((var) = CIRCLEQ_FIRST(head);				\
 	    (var) != CIRCLEQ_END(head);					\
 	    (var) = CIRCLEQ_NEXT(var, field))
 
+//反向遍历循环队列
 #define CIRCLEQ_FOREACH_REVERSE(var, head, field)			\
 	for((var) = CIRCLEQ_LAST(head);					\
 	    (var) != CIRCLEQ_END(head);					\
 	    (var) = CIRCLEQ_PREV(var, field))
 
 /*
- * Circular queue functions.
+ * 循环队列的功能.
  */
+ //初始循环队列,使头节点的cqh_first,cqh_last指向它自身
 #define	CIRCLEQ_INIT(head) do {						\
 	(head)->cqh_first = CIRCLEQ_END(head);				\
 	(head)->cqh_last = CIRCLEQ_END(head);				\
 } while (0)
 
+//在listelm之后插入elm。head为指向循环队列头节点的指针,field是elm结构中包含的CIRCLEQ_ENTRY(type)字段,elm的链由field字段构成
 #define CIRCLEQ_INSERT_AFTER(head, listelm, elm, field) do {		\
 	(elm)->field.cqe_next = (listelm)->field.cqe_next;		\
 	(elm)->field.cqe_prev = (listelm);				\
@@ -429,6 +466,7 @@ struct {								\
 	(listelm)->field.cqe_next = (elm);				\
 } while (0)
 
+//在listelm之前插入elm。head为指向循环队列头节点的指针,field是elm结构中包含的CIRCLEQ_ENTRY(type)字段,elm的链由field字段构成
 #define CIRCLEQ_INSERT_BEFORE(head, listelm, elm, field) do {		\
 	(elm)->field.cqe_next = (listelm);				\
 	(elm)->field.cqe_prev = (listelm)->field.cqe_prev;		\
@@ -439,6 +477,7 @@ struct {								\
 	(listelm)->field.cqe_prev = (elm);				\
 } while (0)
 
+//在循环队列的头部插入节点elm
 #define CIRCLEQ_INSERT_HEAD(head, elm, field) do {			\
 	(elm)->field.cqe_next = (head)->cqh_first;			\
 	(elm)->field.cqe_prev = CIRCLEQ_END(head);			\
@@ -449,6 +488,7 @@ struct {								\
 	(head)->cqh_first = (elm);					\
 } while (0)
 
+//在循环队列的尾部插入节点elm
 #define CIRCLEQ_INSERT_TAIL(head, elm, field) do {			\
 	(elm)->field.cqe_next = CIRCLEQ_END(head);			\
 	(elm)->field.cqe_prev = (head)->cqh_last;			\
@@ -459,6 +499,7 @@ struct {								\
 	(head)->cqh_last = (elm);					\
 } while (0)
 
+//从循环队列中移除节点elm
 #define	CIRCLEQ_REMOVE(head, elm, field) do {				\
 	if ((elm)->field.cqe_next == CIRCLEQ_END(head))			\
 		(head)->cqh_last = (elm)->field.cqe_prev;		\
@@ -472,6 +513,7 @@ struct {								\
 		    (elm)->field.cqe_next;				\
 } while (0)
 
+//将循环队列中的elm替换为elm2
 #define CIRCLEQ_REPLACE(head, elm, elm2, field) do {			\
 	if (((elm2)->field.cqe_next = (elm)->field.cqe_next) ==		\
 	    CIRCLEQ_END(head))						\

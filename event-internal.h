@@ -82,15 +82,20 @@ extern "C" {
 #define EV_CLOSURE_EVENT_FINALIZE_FREE 6
 /** @} */
 
-/** Structure to define the backend of a given event_base. */
+/** 结构定义一个给定事件的后端基础. 对I/O demultiplex机制的封装*/
 struct eventop {
 	/** The name of this backend. */
 	const char *name;
+
+	/*在libevent中，每种I/O demultiplex机制的实现都必须提供以下五个函数接口，来完成自身的初始化、销毁释放；
+	对事件的注册、注销和分发。比如对于epoll，libevent实现了5个对应的接口函数，并在初始化时并将eventop的5个函数指针
+	指向这5个函数，那么程序就可以使用epoll作为I/O demultiplex机制了*/
 	/** Function to set up an event_base to use this backend.  It should
 	 * create a new structure holding whatever information is needed to
 	 * run the backend, and return it.  The returned pointer will get
 	 * stored by event_init into the event_base.evbase field.  On failure,
 	 * this function should return NULL. */
+	 // 初始化
 	void *(*init)(struct event_base *);
 	/** Enable reading/writing on a given fd or signal.  'events' will be
 	 * the events that we're trying to enable: one or more of EV_READ,
@@ -100,17 +105,24 @@ struct eventop {
 	 * fdinfo field below.  It will be set to 0 the first time the fd is
 	 * added.  The function should return 0 on success and -1 on error.
 	 */
+	 // 注册事件
 	int (*add)(struct event_base *, evutil_socket_t fd, short old, short events, void *fdinfo);
 	/** As "add", except 'events' contains the events we mean to disable. */
+	 // 删除事件
 	int (*del)(struct event_base *, evutil_socket_t fd, short old, short events, void *fdinfo);
 	/** Function to implement the core of an event loop.  It must see which
 	    added events are ready, and cause event_active to be called for each
 	    active event (usually via event_io_active or such).  It should
 	    return 0 on success and -1 on error.
 	 */
+	 // 事件分发
 	int (*dispatch)(struct event_base *, struct timeval *);
 	/** Function to clean up and free our data from the event_base. */
+	// 注销，释放资源
 	void (*dealloc)(struct event_base *);
+
+	
+	
 	/** Flag: set if we need to reinitialize the event base after we fork.
 	 */
 	int need_reinit;
@@ -206,9 +218,12 @@ struct event_once {
 };
 
 struct event_base {
+
+	/*你可以把evsel和evbase看作是类和静态函数的关系，比如添加事件时的调用行为：evsel->add(evbase, ev)，
+	  实际执行操作的是evbase*/
 	/** Function pointers and other data to describe this event_base's
 	 * backend. */
-	const struct eventop *evsel;//指向了全局变量ventops
+	const struct eventop *evsel;//evsel指向了全局变量static const struct eventop *eventops[]中的一个.eventop是对I/O demultiplex机制的封装
 	/** Pointer to backend-specific data. */
 	void *evbase;//实际执行多路复用机制的实例化
 

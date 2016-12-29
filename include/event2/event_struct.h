@@ -105,52 +105,56 @@ struct name {								\
 struct event;
 
 struct event_callback {
-	TAILQ_ENTRY(event_callback) evcb_active_next;
-	short evcb_flags;
-	ev_uint8_t evcb_pri;	/* smaller numbers are higher priority */
-	ev_uint8_t evcb_closure;
-	/* allows us to adopt for different types of events */
-        union {
-		void (*evcb_callback)(evutil_socket_t, short, void *);
-		void (*evcb_selfcb)(struct event_callback *, void *);
-		void (*evcb_evfinalize)(struct event *, void *);
-		void (*evcb_cbfinalize)(struct event_callback *, void *);
-	} evcb_cb_union;
-	void *evcb_arg;
+    TAILQ_ENTRY(event_callback) evcb_active_next;
+    short evcb_flags;
+    ev_uint8_t evcb_pri;	/* smaller numbers are higher priority */
+    ev_uint8_t evcb_closure;
+    /* allows us to adopt for different types of events */
+    union {
+        void (*evcb_callback)(evutil_socket_t, short, void *);
+        void (*evcb_selfcb)(struct event_callback *, void *);
+        void (*evcb_evfinalize)(struct event *, void *);
+        void (*evcb_cbfinalize)(struct event_callback *, void *);
+    } evcb_cb_union;
+    void *evcb_arg;
 };
 
 struct event_base;
 struct event {
-	struct event_callback ev_evcallback;
+	/*对event的回调函数的封装，被ev_base调用，执行事件处理程序*/
+    struct event_callback ev_evcallback;
 
-	/* for managing timeouts */
-	union {
-		TAILQ_ENTRY(event) ev_next_with_common_timeout;
-		int min_heap_idx;
-	} ev_timeout_pos;
-	evutil_socket_t ev_fd;
+    /* 用于管理超时 */
+    union {
+        TAILQ_ENTRY(event) ev_next_with_common_timeout;
+        int min_heap_idx;
+    } ev_timeout_pos;
+    evutil_socket_t ev_fd;
 
-	struct event_base *ev_base;
+    struct event_base *ev_base;
 
-	union {
-		/* used for io events */
-		struct {
-			LIST_ENTRY (event) ev_io_next;
-			struct timeval ev_timeout;
-		} ev_io;
+    union {
+        /* 所使用的IO事件 */
+        struct {
+            LIST_ENTRY (event) ev_io_next;
+            struct timeval ev_timeout;
+        } ev_io;
 
-		/* used by signal events */
-		struct {
-			LIST_ENTRY (event) ev_signal_next;
-			short ev_ncalls;
-			/* Allows deletes in callback */
-			short *ev_pncalls;
-		} ev_signal;
-	} ev_;
+        /* 	所使用的信号事件    */
+        struct {
+            LIST_ENTRY (event) ev_signal_next;
+            short ev_ncalls;
+            /* 允许在回调中删除 */
+            short *ev_pncalls;
+        } ev_signal;
+    } ev_;
 
-	short ev_events;
-	short ev_res;		/* result passed to event callback */
-	struct timeval ev_timeout;
+    //event关注的事件类型。I/O事件： EV_WRITE和EV_READ ;定时事件：EV_TIMEOUT
+    //                     信号：	 EV_SIGNAL;    	   辅助选项：EV_PERSIST，表明是一个永久事件
+    short ev_events;
+
+    short ev_res;		/* 结果传递给事件回调 */
+    struct timeval ev_timeout;
 };
 
 TAILQ_HEAD (event_list, event);
@@ -163,7 +167,7 @@ TAILQ_HEAD (event_list, event);
 #undef TAILQ_HEAD
 #endif
 
-LIST_HEAD (event_dlist, event); 
+LIST_HEAD (event_dlist, event);
 
 #ifdef EVENT_DEFINED_LISTENTRY_
 #undef LIST_ENTRY

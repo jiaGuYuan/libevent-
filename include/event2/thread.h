@@ -60,14 +60,17 @@ extern "C" {
    @{
 */
 /** A flag passed to a locking callback when the lock was allocated as a
- * read-write lock, and we want to acquire or release the lock for writing. */
+ * read-write lock, and we want to acquire or release the lock for writing.
+ 仅用于读写锁：为写操作请求或者释放锁*/
 #define EVTHREAD_WRITE	0x04
 /** A flag passed to a locking callback when the lock was allocated as a
- * read-write lock, and we want to acquire or release the lock for reading. */
+ * read-write lock, and we want to acquire or release the lock for reading.
+ 仅用于读写锁：为读操作请求或者释放锁*/
 #define EVTHREAD_READ	0x08
 /** A flag passed to a locking callback when we don't want to block waiting
  * for the lock; if we can't get the lock immediately, we will instead
- * return nonzero from the locking callback. */
+ * return nonzero from the locking callback.
+ 仅用于锁定：仅在可以立刻锁定的时候才请求锁*/
 #define EVTHREAD_TRY    0x10
 /**@}*/
 
@@ -81,10 +84,14 @@ extern "C" {
    @{*/
 /** A recursive lock is one that can be acquired multiple times at once by the
  * same thread.  No other process can allocate the lock until the thread that
- * has been holding it has unlocked it as many times as it locked it. */
+ * has been holding it has unlocked it as many times as it locked it.
+ 不会阻塞已经持有它的线程的锁。 一旦持有它的线程进行原来锁定次数的解锁，
+ 其他线程立刻就可以请求它了。*/
 #define EVTHREAD_LOCKTYPE_RECURSIVE 1
 /* A read-write lock is one that allows multiple simultaneous readers, but
- * where any one writer excludes all other writers and readers. */
+ * where any one writer excludes all other writers and readers.
+ 可以让多个线程同时因为读而持有它， 但是任何时刻只有一个线程因为写而持有它。
+ 写操作排斥所有读操作。*/
 #define EVTHREAD_LOCKTYPE_READWRITE 2
 /**@}*/
 
@@ -92,29 +99,20 @@ extern "C" {
  * locking.   It's used to tell evthread_set_lock_callbacks() how to use
  * locking on this platform.
  */
+ //描述的锁回调函数及其能力。
 struct evthread_lock_callbacks {
-	/** The current version of the locking API.  Set this to
-	 * EVTHREAD_LOCK_API_VERSION */
+	/** 当前版本的锁API.  设置为 EVTHREAD_LOCK_API_VERSION */
 	int lock_api_version;
-	/** Which kinds of locks does this version of the locking API
-	 * support?  A bitfield of EVTHREAD_LOCKTYPE_RECURSIVE and
-	 * EVTHREAD_LOCKTYPE_READWRITE.
-	 *
-	 * (Note that RECURSIVE locks are currently mandatory, and
-	 * READWRITE locks are not currently used.)
-	 **/
+	/** 这个版本的锁支持API锁定吗? 设置为 EVTHREAD_LOCKTYPE_RECURSIVE and EVTHREAD_LOCKTYPE_READWRITE.
+	    (注意:注意RECURSIVE锁是目前强制使用的,READWRITE锁目前不使用) **/
 	unsigned supported_locktypes;
-	/** Function to allocate and initialize new lock of type 'locktype'.
-	 * Returns NULL on failure. */
+	/** 函数分配和初始化“locktype”类型的新锁。返回NULL失败 */
 	void *(*alloc)(unsigned locktype);
-	/** Funtion to release all storage held in 'lock', which was created
-	 * with type 'locktype'. */
+	/** 函数释放指定类型锁持有的所有资源. */
 	void (*free)(void *lock, unsigned locktype);
-	/** Acquire an already-allocated lock at 'lock' with mode 'mode'.
-	 * Returns 0 on success, and nonzero on failure. */
+	/** 以指定模式请求锁.成功，返回0;失败，返回非0 */
 	int (*lock)(unsigned mode, void *lock);
-	/** Release a lock at 'lock' using mode 'mode'.  Returns 0 on success,
-	 * and nonzero on failure. */
+	/** unlock函数必须试图解锁，成功则返回0，否则返回非零。 */
 	int (*unlock)(unsigned mode, void *lock);
 };
 
@@ -137,16 +135,14 @@ struct timeval;
  * condition variables.  It's used to tell evthread_set_condition_callbacks
  * how to use locking on this platform.
  */
+ //描述了与条件变量相关的回调函数
 struct evthread_condition_callbacks {
-	/** The current version of the conditions API.  Set this to
-	 * EVTHREAD_CONDITION_API_VERSION */
+	/** 当前版本的条件API. 设置为 EVTHREAD_CONDITION_API_VERSION */
 	int condition_api_version;
-	/** Function to allocate and initialize a new condition variable.
-	 * Returns the condition variable on success, and NULL on failure.
-	 * The 'condtype' argument will be 0 with this API version.
-	 */
+	/** 函数分配和初始化一个新的条件变量。 成功:返回条件变量
+	失败:返回NULL。 'condtype' 参数为0	 */
 	void *(*alloc_condition)(unsigned condtype);
-	/** Function to free a condition variable. */
+	/** 释放条件变量持有的存储器和资源. */
 	void (*free_condition)(void *cond);
 	/** Function to signal a condition variable.  If 'broadcast' is 1, all
 	 * threads waiting on 'cond' should be woken; otherwise, only on one
@@ -163,8 +159,18 @@ struct evthread_condition_callbacks {
 	 * the event to become signalled; if it is NULL, the function
 	 * should wait indefinitely.
 	 *
+	 
 	 * The function should return -1 on error; 0 if the condition
-	 * was signalled, or 1 on a timeout. */
+	 * was signalled, or 1 on a timeout.
+	 这个函数将等待条件变量.
+	 wait_condition 函数要求三个参数：一个由alloc_condition分配的条件变量，
+	 一个由你提供的evthread_lock_callbacks.alloc函数分配的锁，以及一个可选的超时值。 
+	 调用本函数时，必须已经持有参数指定的锁； 本函数应该释放指定的锁，等待条件变量成为授信状态，
+	 或者直到指定的超时时间已经流逝（可选）。
+	 wait_condition应该在错误时返回-1，条件变量授信时返回0，超时时返回1。
+	 返回之前， 函数应该确定其再次持有锁。最后,signal_condition函数应该唤醒等待该条件变量的
+	 某个线程 (broadcast参数为false时)， 或者唤醒等待条件变量的所有线程(broadcast参数为true时)。只有在持有与条件变量相关的锁的时候，才能够进行这些操作
+	 */
 	int (*wait_condition)(void *cond, void *lock,
 	    const struct timeval *timeout);
 };

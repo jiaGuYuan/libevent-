@@ -89,8 +89,7 @@ void evthreadimpl_disable_lock_debugging_(void)
 	evthread_lock_debugging_enabled_ = 0;
 }
 
-int
-evthread_set_lock_callbacks(const struct evthread_lock_callbacks *cbs)
+int evthread_set_lock_callbacks(const struct evthread_lock_callbacks *cbs)
 {
 	struct evthread_lock_callbacks *target = evthread_get_lock_callbacks();
 

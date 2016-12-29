@@ -210,21 +210,17 @@ struct event_base
  */
 struct event
 #ifdef EVENT_IN_DOXYGEN_
-{/*Empty body so that doxygen will generate documentation here.*/}
+{/*空的内容以便doxygen将其生成文档.*/}
 ;
 
 /**
- * Configuration for an event_base.
- *
- * There are many options that can be used to alter the behavior and
- * implementation of an event_base.  To avoid having to pass them all in a
- * complex many-argument constructor, we provide an abstract data type
- * wrhere you set up configation information before passing it to
- * event_base_new_with_config().
- *
- * @see event_config_new(), event_config_free(), event_base_new_with_config(),
- *   event_config_avoid_method(), event_config_require_features(),
- *   event_config_set_flag(), event_config_set_num_cpus_hint()
+ event_base配置。
+ 有很多选项可用于改变行为并实现一个event_base.
+ 避免他们通过所有复杂many-argument构造函数.
+ 我们提供了一个抽象数据类型设置configation信息,在传递到 event_base_new_with_config()之前。
+  @see event_config_new(), event_config_free(), event_base_new_with_config(),
+    event_config_avoid_method(), event_config_require_features(),
+    event_config_set_flag(), event_config_set_num_cpus_hint()
  */
 struct event_config
 #ifdef EVENT_IN_DOXYGEN_
@@ -651,7 +647,8 @@ void event_base_free_nofinalize(struct event_base *);
 #define _EVENT_LOG_ERR EVENT_LOG_ERR
 
 /**
-  A callback function used to intercept Libevent's log messages.
+  一个回调函数用来拦截Libevent的日志消息。
+  将定义了与该类型匹配的函数作为参数传递给event_set_log_callback，可以改变libevent的日志行为
 
   @see event_set_log_callback
  */
@@ -666,12 +663,14 @@ typedef void (*event_log_cb)(int severity, const char *msg);
   NOTE: The function you provide *must not* call any other libevent
   functionality.  Doing so can produce undefined behavior.
   */
-EVENT2_EXPORT_SYMBOL
+EVENT2_EXPORT_SYMBOL 
 void event_set_log_callback(event_log_cb cb);
 
 /**
    A function to be called if Libevent encounters a fatal internal error.
-
+   一个回调函数用来处理Libevent遇到的致命内部错误。
+   将定义的与该类型匹配的函数作为参数传递给event_set_fatal_callback，那么在Libevent遇到致命的内部错误时将调用这个函数
+  
    @see event_set_fatal_callback
  */
 typedef void (*event_fatal_cb)(int err);
