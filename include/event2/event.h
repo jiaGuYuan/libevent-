@@ -153,7 +153,7 @@
 
 /** @file event2/event.h
 
-  等待和接收事件的核心功能,使用vent bases.
+  等待和接收事件的核心功能,使用event bases.
 */
 
 #include <event2/visibility.h>
@@ -185,8 +185,7 @@ extern "C" {
  */
 struct event_base
 #ifdef EVENT_IN_DOXYGEN_
-{/*内容为空，以便doxygen将其生成文档.*/
-}
+{/*内容为空，以便doxygen将其生成文档.*/}
 #endif
 ;
 
@@ -211,8 +210,8 @@ struct event_base
  */
 struct event
 #ifdef EVENT_IN_DOXYGEN_
-{/*空的内容以便doxygen将其生成文档.*/
-}
+{/*空的内容以便doxygen将其生成文档.*/}
+#endif
 ;
 
 /**
@@ -1607,6 +1606,6 @@ void libevent_global_shutdown(void);
 #ifdef __cplusplus
 }
 #endif
-#endif
+
 
 #endif /* EVENT2_EVENT_H_INCLUDED_ */
