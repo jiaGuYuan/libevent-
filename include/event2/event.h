@@ -43,13 +43,13 @@
   目前,Libevent支持 /dev/poll, kqueue(2), select(2), poll(2),
   epoll(4), and evports. 暴露的事件API机制完全独立于内部事件，
   并且一个简单的更新Libevent可以提供新功能,而无需重新设计应用程序
-  As a  result, Libevent允许移动应用程序开发 and 在一个操作系统上提供了大部分可裁剪的事件通知机制.  
+  As a  result, Libevent允许移动应用程序开发 and 在一个操作系统上提供了大部分可裁剪的事件通知机制.
   Libevent也可以用于多线程程序.  Libevent
   should compile on Linux, *BSD, Mac OS X, Solaris and, Windows.
 
   @section usage Standard usage
 
-  每个使用Libevent的程序必须包括<event2/event.h>, 并且在链接时提供-levent标志  
+  每个使用Libevent的程序必须包括<event2/event.h>, 并且在链接时提供-levent标志
   (你可以用 -levent_core标志链接，如果你只希望的主要事件和缓冲IO-based代码, 且不想链接任何协议代码.)
 
   @section setup Library setup
@@ -64,7 +64,7 @@
 
   接下来,您需要使用event_base_new()  or event_base_new_with_config()创建一个event_base结构,
   event_base负责跟踪那些被"挂起的"事件(也就是说, 看是否他们变得活跃)和"活跃"的事件。
-  每一个事件与一个event_base相关联.  
+  每一个事件与一个event_base相关联.
 
 
   @section event Event notification
@@ -79,13 +79,13 @@
   最后,您调用event_base_dispatch()循环和分派事件。
   您还可以使用event_base_loop()更细粒度的控制。
 
-  目前,只有一个线程可以指定event_base调度时间.  
+  目前,只有一个线程可以指定event_base调度时间.
   如果你想在多个线程运行事件，你有两种方法:一个event_base事件工作添加到一个工作队列的事件,
   或者您可以创建多个event_base对象。
   If you want to run events in multiple threads at once, you can
   either have a single event_base whose events add work to a work queue,
   or you can create multiple event_base objects.
-  
+
 
   @section bufferevent I/O Buffers
 
@@ -176,16 +176,17 @@ extern "C" {
 #include <event2/util.h>
 
 /**
- 结构来保存信息和状态,为了Libevent分发循环 
- event_base位于Libevent的中心,每一个应用程序都有一个Libevent.  
+ 结构来保存信息和状态,为了Libevent分发循环
+ event_base位于Libevent的中心,每一个应用程序都有一个Libevent.
  它跟踪所有的挂起和活跃的事件，并且将活动的事件通知您的应用程序。
- 
+
  这是一个不透明的结构; 你可以使用using event_base_new() or event_base_new_with_config()来分配一个event_base。
  * @see event_base_new(), event_base_free(), event_base_loop(),event_base_new_with_config()
  */
 struct event_base
 #ifdef EVENT_IN_DOXYGEN_
-{/*内容为空，以便doxygen将其生成文档.*/}
+{/*内容为空，以便doxygen将其生成文档.*/
+}
 #endif
 ;
 
@@ -210,7 +211,8 @@ struct event_base
  */
 struct event
 #ifdef EVENT_IN_DOXYGEN_
-{/*空的内容以便doxygen将其生成文档.*/}
+{/*空的内容以便doxygen将其生成文档.*/
+}
 ;
 
 /**
@@ -224,7 +226,8 @@ struct event
  */
 struct event_config
 #ifdef EVENT_IN_DOXYGEN_
-{/*Empty body so that doxygen will generate documentation here.*/}
+{/*Empty body so that doxygen will generate documentation here.*/
+}
 #endif
 ;
 
@@ -457,50 +460,50 @@ enum event_method_feature {
        event_method_feature
  */
 enum event_base_config_flag {
-	/** Do not allocate a lock for the event base, even if we have
-	    locking set up.
+    /** Do not allocate a lock for the event base, even if we have
+        locking set up.
 
-	    Setting this option will make it unsafe and nonfunctional to call
-	    functions on the base concurrently from multiple threads.
-	*/
-	EVENT_BASE_FLAG_NOLOCK = 0x01,
-	/** Do not check the EVENT_* environment variables when configuring
-	    an event_base  */
-	EVENT_BASE_FLAG_IGNORE_ENV = 0x02,
-	/** Windows only: enable the IOCP dispatcher at startup
+        Setting this option will make it unsafe and nonfunctional to call
+        functions on the base concurrently from multiple threads.
+    */
+    EVENT_BASE_FLAG_NOLOCK = 0x01,
+    /** Do not check the EVENT_* environment variables when configuring
+        an event_base  */
+    EVENT_BASE_FLAG_IGNORE_ENV = 0x02,
+    /** Windows only: enable the IOCP dispatcher at startup
 
-	    If this flag is set then bufferevent_socket_new() and
-	    evconn_listener_new() will use IOCP-backed implementations
-	    instead of the usual select-based one on Windows.
-	 */
-	EVENT_BASE_FLAG_STARTUP_IOCP = 0x04,
-	/** Instead of checking the current time every time the event loop is
-	    ready to run timeout callbacks, check after each timeout callback.
-	 */
-	EVENT_BASE_FLAG_NO_CACHE_TIME = 0x08,
+        If this flag is set then bufferevent_socket_new() and
+        evconn_listener_new() will use IOCP-backed implementations
+        instead of the usual select-based one on Windows.
+     */
+    EVENT_BASE_FLAG_STARTUP_IOCP = 0x04,
+    /** Instead of checking the current time every time the event loop is
+        ready to run timeout callbacks, check after each timeout callback.
+     */
+    EVENT_BASE_FLAG_NO_CACHE_TIME = 0x08,
 
-	/** If we are using the epoll backend, this flag says that it is
-	    safe to use Libevent's internal change-list code to batch up
-	    adds and deletes in order to try to do as few syscalls as
-	    possible.  Setting this flag can make your code run faster, but
-	    it may trigger a Linux bug: it is not safe to use this flag
-	    if you have any fds cloned by dup() or its variants.  Doing so
-	    will produce strange and hard-to-diagnose bugs.
+    /** If we are using the epoll backend, this flag says that it is
+        safe to use Libevent's internal change-list code to batch up
+        adds and deletes in order to try to do as few syscalls as
+        possible.  Setting this flag can make your code run faster, but
+        it may trigger a Linux bug: it is not safe to use this flag
+        if you have any fds cloned by dup() or its variants.  Doing so
+        will produce strange and hard-to-diagnose bugs.
 
-	    This flag can also be activated by setting the
-	    EVENT_EPOLL_USE_CHANGELIST environment variable.
+        This flag can also be activated by setting the
+        EVENT_EPOLL_USE_CHANGELIST environment variable.
 
-	    This flag has no effect if you wind up using a backend other than
-	    epoll.
-	 */
-	EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST = 0x10,
+        This flag has no effect if you wind up using a backend other than
+        epoll.
+     */
+    EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST = 0x10,
 
-	/** Ordinarily, Libevent implements its time and timeout code using
-	    the fastest monotonic timer that we have.  If this flag is set,
-	    however, we use less efficient more precise timer, assuming one is
-	    present.
-	 */
-	EVENT_BASE_FLAG_PRECISE_TIMER = 0x20
+    /** Ordinarily, Libevent implements its time and timeout code using
+        the fastest monotonic timer that we have.  If this flag is set,
+        however, we use less efficient more precise timer, assuming one is
+        present.
+     */
+    EVENT_BASE_FLAG_PRECISE_TIMER = 0x20
 };
 
 /**
@@ -589,8 +592,8 @@ int event_config_set_num_cpus_hint(struct event_config *cfg, int cpus);
  **/
 EVENT2_EXPORT_SYMBOL
 int event_config_set_max_dispatch_interval(struct event_config *cfg,
-    const struct timeval *max_interval, int max_callbacks,
-    int min_priority);
+        const struct timeval *max_interval, int max_callbacks,
+        int min_priority);
 
 /**
   Initialize the event API.
@@ -663,14 +666,14 @@ typedef void (*event_log_cb)(int severity, const char *msg);
   NOTE: The function you provide *must not* call any other libevent
   functionality.  Doing so can produce undefined behavior.
   */
-EVENT2_EXPORT_SYMBOL 
+EVENT2_EXPORT_SYMBOL
 void event_set_log_callback(event_log_cb cb);
 
 /**
    A function to be called if Libevent encounters a fatal internal error.
    一个回调函数用来处理Libevent遇到的致命内部错误。
    将定义的与该类型匹配的函数作为参数传递给event_set_fatal_callback，那么在Libevent遇到致命的内部错误时将调用这个函数
-  
+
    @see event_set_fatal_callback
  */
 typedef void (*event_fatal_cb)(int err);
@@ -1321,8 +1324,8 @@ int event_get_priority(const struct event *ev);
  */
 EVENT2_EXPORT_SYMBOL
 void event_get_assignment(const struct event *event,
-    struct event_base **base_out, evutil_socket_t *fd_out, short *events_out,
-    event_callback_fn *callback_out, void **arg_out);
+                          struct event_base **base_out, evutil_socket_t *fd_out, short *events_out,
+                          event_callback_fn *callback_out, void **arg_out);
 
 /**
    Return the size of struct event that the Libevent library was compiled
@@ -1446,7 +1449,7 @@ int	event_priority_set(struct event *, int);
  */
 EVENT2_EXPORT_SYMBOL
 const struct timeval *event_base_init_common_timeout(struct event_base *base,
-    const struct timeval *duration);
+        const struct timeval *duration);
 
 #if !defined(EVENT__DISABLE_MM_REPLACEMENT) || defined(EVENT_IN_DOXYGEN_)
 /**
@@ -1473,9 +1476,9 @@ const struct timeval *event_base_init_common_timeout(struct event_base *base,
  **/
 EVENT2_EXPORT_SYMBOL
 void event_set_mem_functions(
-	void *(*malloc_fn)(size_t sz),
-	void *(*realloc_fn)(void *ptr, size_t sz),
-	void (*free_fn)(void *ptr));
+    void *(*malloc_fn)(size_t sz),
+    void *(*realloc_fn)(void *ptr, size_t sz),
+    void (*free_fn)(void *ptr));
 /** This definition is present if Libevent was built with support for
     event_set_mem_functions() */
 #define EVENT_SET_MEM_FUNCTIONS_IMPLEMENTED
@@ -1567,7 +1570,7 @@ int event_base_foreach_event(struct event_base *base, event_base_foreach_event_c
  */
 EVENT2_EXPORT_SYMBOL
 int event_base_gettimeofday_cached(struct event_base *base,
-    struct timeval *tv);
+                                   struct timeval *tv);
 
 /** Update cached_tv in the 'base' to the current time
  *

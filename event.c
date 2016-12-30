@@ -484,8 +484,7 @@ event_init(void)
     return (base);
 }
 
-struct event_base *
-event_base_new(void)
+struct event_base *event_base_new(void)
 {
     struct event_base *base = NULL;
     struct event_config *cfg = event_config_new();
@@ -538,8 +537,8 @@ event_base_get_features(const struct event_base *base)
     return base->evsel->features;
 }
 
-void
-event_enable_debug_mode(void)
+
+void event_enable_debug_mode(void)
 {
 #ifndef EVENT__DISABLE_DEBUG_MODE
 
@@ -577,8 +576,7 @@ event_disable_debug_mode(void)
 #endif
 }
 
-struct event_base *
-event_base_new_with_config(const struct event_config *cfg)
+struct event_base *event_base_new_with_config(const struct event_config *cfg)
 {
     int i;
     struct event_base *base;
@@ -724,8 +722,7 @@ event_base_new_with_config(const struct event_config *cfg)
     return (base);
 }
 
-int
-event_base_start_iocp_(struct event_base *base, int n_cpus)
+int event_base_start_iocp_(struct event_base *base, int n_cpus)
 {
 #ifdef _WIN32
 
@@ -1153,8 +1150,7 @@ event_get_supported_methods(void)
     return (methods);
 }
 
-struct event_config *
-event_config_new(void)
+struct event_config *event_config_new(void)
 {
     struct event_config *cfg = mm_calloc(1, sizeof(*cfg));
 
@@ -1178,8 +1174,7 @@ event_config_entry_free(struct event_config_entry *entry)
     mm_free(entry);
 }
 
-void
-event_config_free(struct event_config *cfg)
+void event_config_free(struct event_config *cfg)
 {
     struct event_config_entry *entry;
 
@@ -1191,8 +1186,7 @@ event_config_free(struct event_config *cfg)
     mm_free(cfg);
 }
 
-int
-event_config_set_flag(struct event_config *cfg, int flag)
+int event_config_set_flag(struct event_config *cfg, int flag)
 {
     if (!cfg)
         return -1;
@@ -1201,8 +1195,7 @@ event_config_set_flag(struct event_config *cfg, int flag)
     return 0;
 }
 
-int
-event_config_avoid_method(struct event_config *cfg, const char *method)
+int event_config_avoid_method(struct event_config *cfg, const char *method)
 {
     struct event_config_entry *entry = mm_malloc(sizeof(*entry));
 
@@ -1219,9 +1212,7 @@ event_config_avoid_method(struct event_config *cfg, const char *method)
     return (0);
 }
 
-int
-event_config_require_features(struct event_config *cfg,
-                              int features)
+int event_config_require_features(struct event_config *cfg, int features)
 {
     if (!cfg)
         return (-1);
@@ -1230,8 +1221,7 @@ event_config_require_features(struct event_config *cfg,
     return (0);
 }
 
-int
-event_config_set_num_cpus_hint(struct event_config *cfg, int cpus)
+int event_config_set_num_cpus_hint(struct event_config *cfg, int cpus)
 {
     if (!cfg)
         return (-1);
@@ -1240,8 +1230,7 @@ event_config_set_num_cpus_hint(struct event_config *cfg, int cpus)
     return (0);
 }
 
-int
-event_config_set_max_dispatch_interval(struct event_config *cfg,
+int event_config_set_max_dispatch_interval(struct event_config *cfg,
                                        const struct timeval *max_interval, int max_callbacks, int min_priority)
 {
     if (max_interval)
@@ -1260,14 +1249,12 @@ event_config_set_max_dispatch_interval(struct event_config *cfg,
     return (0);
 }
 
-int
-event_priority_init(int npriorities)
+int event_priority_init(int npriorities)
 {
     return event_base_priority_init(current_base, npriorities);
 }
 
-int
-event_base_priority_init(struct event_base *base, int npriorities)
+int event_base_priority_init(struct event_base *base, int npriorities)
 {
     int i, r;
     r = -1;
@@ -1308,8 +1295,7 @@ err:
     return (r);
 }
 
-int
-event_base_get_npriorities(struct event_base *base)
+int event_base_get_npriorities(struct event_base *base)
 {
 
     int n;
@@ -1323,8 +1309,7 @@ event_base_get_npriorities(struct event_base *base)
     return (n);
 }
 
-int
-event_base_get_num_events(struct event_base *base, unsigned int type)
+int event_base_get_num_events(struct event_base *base, unsigned int type)
 {
     int r = 0;
 
@@ -1344,8 +1329,7 @@ event_base_get_num_events(struct event_base *base, unsigned int type)
     return r;
 }
 
-int
-event_base_get_max_events(struct event_base *base, unsigned int type, int clear)
+int event_base_get_max_events(struct event_base *base, unsigned int type, int clear)
 {
     int r = 0;
 
@@ -2303,7 +2287,8 @@ struct event *event_base_get_running_event(struct event_base *base)
     return ev;
 }
 
-struct event *event_new(struct event_base *base, evutil_socket_t fd, short events, void (*cb)(evutil_socket_t, short, void *), void *arg)
+struct event *event_new(struct event_base *base, evutil_socket_t fd, 
+					short events, void (*cb)(evutil_socket_t, short, void *), void *arg)
 {
     struct event *ev;
     ev = mm_malloc(sizeof(struct event));
@@ -2584,8 +2569,7 @@ event_get_priority(const struct event *ev)
     return ev->ev_pri;
 }
 
-int
-event_add(struct event *ev, const struct timeval *tv)
+int event_add(struct event *ev, const struct timeval *tv)
 {
     int res;
 
