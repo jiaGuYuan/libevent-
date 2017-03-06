@@ -282,7 +282,7 @@ struct name {								\
 //尾队列头初始化
 #define TAILQ_HEAD_INITIALIZER(head)	{ NULL, &(head).tqh_first }
 
-//尾队列头条目。
+//尾队列头条目。用于定义一个尾队列条目－－类型为type
 //该结构体是一个匿名结构体。它一般都是另外一个结构体或者共用体的成员  
 #define TAILQ_ENTRY(type)						\
 struct {								\

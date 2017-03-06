@@ -2570,7 +2570,8 @@ event_get_priority(const struct event *ev)
     return ev->ev_pri;
 }
 
-/*注册事件
+/*注册事件: 将ev注册到ev->ev_base上，如果注册成功，ev将被插入到已注册链表中；
+            如果tv不为NULL，则会同时注册定时事件，将ev添加到timer堆上；
   参数：ev：指向要注册的事件；
         tv：超时时间；*/
 int event_add(struct event *ev, const struct timeval *tv)

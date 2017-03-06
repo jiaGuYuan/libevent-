@@ -54,14 +54,14 @@ extern "C" {
 /* For evkeyvalq */
 #include <event2/keyvalq_struct.h>
 
-#define EVLIST_TIMEOUT	    0x01
-#define EVLIST_INSERTED	    0x02
+#define EVLIST_TIMEOUT	    0x01  // event在time堆中  
+#define EVLIST_INSERTED	    0x02  // event在已注册事件链表中 
 #define EVLIST_SIGNAL	    0x04
-#define EVLIST_ACTIVE	    0x08
-#define EVLIST_INTERNAL	    0x10
+#define EVLIST_ACTIVE	    0x08  // event在激活链表中
+#define EVLIST_INTERNAL	    0x10  // 内部使用标记 
 #define EVLIST_ACTIVE_LATER 0x20
 #define EVLIST_FINALIZING   0x40
-#define EVLIST_INIT	    0x80
+#define EVLIST_INIT	    0x80      // event已被初始化  
 
 #define EVLIST_ALL          0xff
 
@@ -127,6 +127,7 @@ struct event {
     /* 用于管理超时 */
     union {
         TAILQ_ENTRY(event) ev_next_with_common_timeout;//双向链表节点
+        
         int min_heap_idx; //timeout事件，在小根堆中的索引
     } ev_timeout_pos;
     evutil_socket_t ev_fd; //对于I/O事件，是绑定的文件描述符；对于signal事件，是绑定的信号
@@ -137,15 +138,14 @@ struct event {
         /* 所使用的IO事件 */
         struct {
             LIST_ENTRY (event) ev_io_next;//双向链表节点
-            struct timeval ev_timeout;
+            struct timeval ev_timeout; //超时值
         } ev_io;
 
         /* 	所使用的信号事件    */
         struct {
             LIST_ENTRY (event) ev_signal_next; //双向链表节点
-            short ev_ncalls;
-            /* 允许在回调中删除 */
-            short *ev_pncalls;
+            short ev_ncalls;  //事件就绪执行时，调用ev_callback的次数，通常为1；
+            short *ev_pncalls; //通常指向ev_ncalls或者为NULL( 用于传址:在回调函数中操作ev_ncalls */)
         } ev_signal;
     } ev_;
 
