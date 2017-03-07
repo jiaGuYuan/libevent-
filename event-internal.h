@@ -82,7 +82,9 @@ extern "C" {
 #define EV_CLOSURE_EVENT_FINALIZE_FREE 6
 /** @} */
 
-/** 结构定义一个给定事件的后端基础. 对I/O demultiplex机制的封装*/
+/** 结构定义一个给定事件的后端基础. 对I/O demultiplex机制的封装。
+　　封装了select、poll、kequeue和epoll等等
+*/
 struct eventop {
 	/** The name of this backend. */
 	const char *name;
@@ -95,6 +97,7 @@ struct eventop {
 	 * run the backend, and return it.  The returned pointer will get
 	 * stored by event_init into the event_base.evbase field.  On failure,
 	 * this function should return NULL. */
+	 
 	 // 初始化
 	void *(*init)(struct event_base *);
 	/** Enable reading/writing on a given fd or signal.  'events' will be
@@ -221,8 +224,10 @@ struct event_once {
 //用来描述event_base后端的函数指针和其他数据。
 struct event_base {
 
-	/*你可以把evsel和evbase看作是类和静态函数的关系，比如添加事件时的调用行为：evsel->add(evbase, ev)，
-	  实际执行操作的是evbase*/
+	/* evsel封装了多种形式的分发机制，evbase指定了具体使用哪一种.
+	　 比如添加事件时的调用行为：evsel->add(evbase, ev),实际上是将事件添加到evbase对应的分发机制上。
+	　 (这里有点用C模拟C++继承(多态)的味道，evsel是父类,evbase是evsel的子类,通过父类的指针实际操作的是子类的对象)
+	*/
 	const struct eventop *evsel;//evsel指向了全局变量static const struct eventop *eventops[]中的一个.eventop是对I/O demultiplex机制的封装
 	void *evbase;//指向特定后台数据。实际执行多路复用机制的实例化
 
@@ -272,10 +277,10 @@ struct event_base {
 	/* 活跃的事件管理. 
 	   由活动的不同优先级的event_callbacks队列组成的数组，数组的每个元素对应一个优先级的队列。
 	   由活动的event_callbacks组成的数组(那些触发的事件,其回调函数需要调用).
-	   其的元素activequeues[priority]是一个队列。
-	   低优先级数据更加重要，并且失速更高*/
+	   其元素以优先级作为索引值,每个元素activequeues[priority]指向具有该优先级的激活事件队列。
+	 */
 	struct evcallback_list *activequeues;
-	/** activequeues的长度 */
+	/** activequeues的长度 = 设置的优先级数*/
 	int nactivequeues;
 	/** 一个event_callbacks列表,下次我们处理事件应该变得活跃,但这次没有。*/
 	struct evcallback_list active_later_queue;
