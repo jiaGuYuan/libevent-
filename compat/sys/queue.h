@@ -1,9 +1,9 @@
-/*	$OpenBSD: queue.h,v 1.16 2000/09/07 19:47:59 art Exp $	*/
-/*	$NetBSD: queue.h,v 1.11 1996/05/16 05:17:14 mycroft Exp $	*/
+/*    $OpenBSD: queue.h,v 1.16 2000/09/07 19:47:59 art Exp $    */
+/*    $NetBSD: queue.h,v 1.11 1996/05/16 05:17:14 mycroft Exp $    */
 
 /*
  * Copyright (c) 1991, 1993
- *	The Regents of the University of California.  All rights reserved.
+ *    The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,11 +29,11 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)queue.h	8.5 (Berkeley) 8/20/94
+ *    @(#)queue.h    8.5 (Berkeley) 8/20/94
  */
 
-#ifndef	SYS_QUEUE_H__
-#define	SYS_QUEUE_H__
+#ifndef    SYS_QUEUE_H__
+#define    SYS_QUEUE_H__
 
 /*
  * This file defines five types of data structures: singly-linked lists,
@@ -85,446 +85,480 @@
 /*
  * Singly-linked List definitions.
  */
-#define SLIST_HEAD(name, type)						\
-struct name {								\
-	struct type *slh_first;	/* first element */			\
+#define SLIST_HEAD(name, type)                        \
+struct name {                                \
+    struct type *slh_first;    /* first element */            \
 }
 
-#define	SLIST_HEAD_INITIALIZER(head)					\
-	{ NULL }
+#define    SLIST_HEAD_INITIALIZER(head)                    \
+    { NULL }
 
 #ifndef _WIN32
-#define SLIST_ENTRY(type)						\
-struct {								\
-	struct type *sle_next;	/* next element */			\
+#define SLIST_ENTRY(type)                        \
+struct {                                \
+    struct type *sle_next;    /* next element */            \
 }
 #endif
 
 /*
  * Singly-linked List access methods.
  */
-#define	SLIST_FIRST(head)	((head)->slh_first)
-#define	SLIST_END(head)		NULL
-#define	SLIST_EMPTY(head)	(SLIST_FIRST(head) == SLIST_END(head))
-#define	SLIST_NEXT(elm, field)	((elm)->field.sle_next)
+#define    SLIST_FIRST(head)    ((head)->slh_first)
+#define    SLIST_END(head)        NULL
+#define    SLIST_EMPTY(head)    (SLIST_FIRST(head) == SLIST_END(head))
+#define    SLIST_NEXT(elm, field)    ((elm)->field.sle_next)
 
-#define	SLIST_FOREACH(var, head, field)					\
-	for((var) = SLIST_FIRST(head);					\
-	    (var) != SLIST_END(head);					\
-	    (var) = SLIST_NEXT(var, field))
+#define    SLIST_FOREACH(var, head, field)                    \
+    for((var) = SLIST_FIRST(head);                    \
+        (var) != SLIST_END(head);                    \
+        (var) = SLIST_NEXT(var, field))
 
 /*
  * Singly-linked List functions.
  */
-#define	SLIST_INIT(head) {						\
-	SLIST_FIRST(head) = SLIST_END(head);				\
+#define    SLIST_INIT(head) {                        \
+    SLIST_FIRST(head) = SLIST_END(head);                \
 }
 
-#define	SLIST_INSERT_AFTER(slistelm, elm, field) do {			\
-	(elm)->field.sle_next = (slistelm)->field.sle_next;		\
-	(slistelm)->field.sle_next = (elm);				\
+#define    SLIST_INSERT_AFTER(slistelm, elm, field) do {            \
+    (elm)->field.sle_next = (slistelm)->field.sle_next;        \
+    (slistelm)->field.sle_next = (elm);                \
 } while (0)
 
-#define	SLIST_INSERT_HEAD(head, elm, field) do {			\
-	(elm)->field.sle_next = (head)->slh_first;			\
-	(head)->slh_first = (elm);					\
+#define    SLIST_INSERT_HEAD(head, elm, field) do {            \
+    (elm)->field.sle_next = (head)->slh_first;            \
+    (head)->slh_first = (elm);                    \
 } while (0)
 
-#define	SLIST_REMOVE_HEAD(head, field) do {				\
-	(head)->slh_first = (head)->slh_first->field.sle_next;		\
+#define    SLIST_REMOVE_HEAD(head, field) do {                \
+    (head)->slh_first = (head)->slh_first->field.sle_next;        \
 } while (0)
 
 /*
  * List definitions.
  */
-#define LIST_HEAD(name, type)						\
-struct name {								\
-	struct type *lh_first;	/* first element */			\
+#define LIST_HEAD(name, type)                        \
+struct name {                                \
+    struct type *lh_first;    /* first element */            \
 }
 
-#define LIST_HEAD_INITIALIZER(head)					\
-	{ NULL }
+#define LIST_HEAD_INITIALIZER(head)                    \
+    { NULL }
 
-#define LIST_ENTRY(type)						\
-struct {								\
-	struct type *le_next;	/* next element */			\
-	struct type **le_prev;	/* address of previous next element */	\
+#define LIST_ENTRY(type)                        \
+struct {                                \
+    struct type *le_next;    /* next element */            \
+    struct type **le_prev;    /* address of previous next element */    \
 }
 
 /*
  * List access methods
  */
-#define	LIST_FIRST(head)		((head)->lh_first)
-#define	LIST_END(head)			NULL
-#define	LIST_EMPTY(head)		(LIST_FIRST(head) == LIST_END(head))
-#define	LIST_NEXT(elm, field)		((elm)->field.le_next)
+#define    LIST_FIRST(head)        ((head)->lh_first)
+#define    LIST_END(head)            NULL
+#define    LIST_EMPTY(head)        (LIST_FIRST(head) == LIST_END(head))
+#define    LIST_NEXT(elm, field)        ((elm)->field.le_next)
 
-#define LIST_FOREACH(var, head, field)					\
-	for((var) = LIST_FIRST(head);					\
-	    (var)!= LIST_END(head);					\
-	    (var) = LIST_NEXT(var, field))
+#define LIST_FOREACH(var, head, field)                    \
+    for((var) = LIST_FIRST(head);                    \
+        (var)!= LIST_END(head);                    \
+        (var) = LIST_NEXT(var, field))
 
 /*
  * List functions.
  */
-#define	LIST_INIT(head) do {						\
-	LIST_FIRST(head) = LIST_END(head);				\
+#define    LIST_INIT(head) do {                        \
+    LIST_FIRST(head) = LIST_END(head);                \
 } while (0)
 
-#define LIST_INSERT_AFTER(listelm, elm, field) do {			\
-	if (((elm)->field.le_next = (listelm)->field.le_next) != NULL)	\
-		(listelm)->field.le_next->field.le_prev =		\
-		    &(elm)->field.le_next;				\
-	(listelm)->field.le_next = (elm);				\
-	(elm)->field.le_prev = &(listelm)->field.le_next;		\
+#define LIST_INSERT_AFTER(listelm, elm, field) do {            \
+    if (((elm)->field.le_next = (listelm)->field.le_next) != NULL)    \
+        (listelm)->field.le_next->field.le_prev =        \
+            &(elm)->field.le_next;                \
+    (listelm)->field.le_next = (elm);                \
+    (elm)->field.le_prev = &(listelm)->field.le_next;        \
 } while (0)
 
-#define	LIST_INSERT_BEFORE(listelm, elm, field) do {			\
-	(elm)->field.le_prev = (listelm)->field.le_prev;		\
-	(elm)->field.le_next = (listelm);				\
-	*(listelm)->field.le_prev = (elm);				\
-	(listelm)->field.le_prev = &(elm)->field.le_next;		\
+#define    LIST_INSERT_BEFORE(listelm, elm, field) do {            \
+    (elm)->field.le_prev = (listelm)->field.le_prev;        \
+    (elm)->field.le_next = (listelm);                \
+    *(listelm)->field.le_prev = (elm);                \
+    (listelm)->field.le_prev = &(elm)->field.le_next;        \
 } while (0)
 
-#define LIST_INSERT_HEAD(head, elm, field) do {				\
-	if (((elm)->field.le_next = (head)->lh_first) != NULL)		\
-		(head)->lh_first->field.le_prev = &(elm)->field.le_next;\
-	(head)->lh_first = (elm);					\
-	(elm)->field.le_prev = &(head)->lh_first;			\
+#define LIST_INSERT_HEAD(head, elm, field) do {                \
+    if (((elm)->field.le_next = (head)->lh_first) != NULL)        \
+        (head)->lh_first->field.le_prev = &(elm)->field.le_next;\
+    (head)->lh_first = (elm);                    \
+    (elm)->field.le_prev = &(head)->lh_first;            \
 } while (0)
 
-#define LIST_REMOVE(elm, field) do {					\
-	if ((elm)->field.le_next != NULL)				\
-		(elm)->field.le_next->field.le_prev =			\
-		    (elm)->field.le_prev;				\
-	*(elm)->field.le_prev = (elm)->field.le_next;			\
+#define LIST_REMOVE(elm, field) do {                    \
+    if ((elm)->field.le_next != NULL)                \
+        (elm)->field.le_next->field.le_prev =            \
+            (elm)->field.le_prev;                \
+    *(elm)->field.le_prev = (elm)->field.le_next;            \
 } while (0)
 
-#define LIST_REPLACE(elm, elm2, field) do {				\
-	if (((elm2)->field.le_next = (elm)->field.le_next) != NULL)	\
-		(elm2)->field.le_next->field.le_prev =			\
-		    &(elm2)->field.le_next;				\
-	(elm2)->field.le_prev = (elm)->field.le_prev;			\
-	*(elm2)->field.le_prev = (elm2);				\
+#define LIST_REPLACE(elm, elm2, field) do {                \
+    if (((elm2)->field.le_next = (elm)->field.le_next) != NULL)    \
+        (elm2)->field.le_next->field.le_prev =            \
+            &(elm2)->field.le_next;                \
+    (elm2)->field.le_prev = (elm)->field.le_prev;            \
+    *(elm2)->field.le_prev = (elm2);                \
 } while (0)
 
 /*
  * Simple queue definitions.
  */
-#define SIMPLEQ_HEAD(name, type)					\
-struct name {								\
-	struct type *sqh_first;	/* first element */			\
-	struct type **sqh_last;	/* addr of last next element */		\
+#define SIMPLEQ_HEAD(name, type)                    \
+struct name {                                \
+    struct type *sqh_first;    /* first element */            \
+    struct type **sqh_last;    /* addr of last next element */        \
 }
 
-#define SIMPLEQ_HEAD_INITIALIZER(head)					\
-	{ NULL, &(head).sqh_first }
+#define SIMPLEQ_HEAD_INITIALIZER(head)                    \
+    { NULL, &(head).sqh_first }
 
-#define SIMPLEQ_ENTRY(type)						\
-struct {								\
-	struct type *sqe_next;	/* next element */			\
+#define SIMPLEQ_ENTRY(type)                        \
+struct {                                \
+    struct type *sqe_next;    /* next element */            \
 }
 
 /*
  * Simple queue access methods.
  */
-#define	SIMPLEQ_FIRST(head)	    ((head)->sqh_first)
-#define	SIMPLEQ_END(head)	    NULL
-#define	SIMPLEQ_EMPTY(head)	    (SIMPLEQ_FIRST(head) == SIMPLEQ_END(head))
-#define	SIMPLEQ_NEXT(elm, field)    ((elm)->field.sqe_next)
+#define    SIMPLEQ_FIRST(head)        ((head)->sqh_first)
+#define    SIMPLEQ_END(head)        NULL
+#define    SIMPLEQ_EMPTY(head)        (SIMPLEQ_FIRST(head) == SIMPLEQ_END(head))
+#define    SIMPLEQ_NEXT(elm, field)    ((elm)->field.sqe_next)
 
-#define SIMPLEQ_FOREACH(var, head, field)				\
-	for((var) = SIMPLEQ_FIRST(head);				\
-	    (var) != SIMPLEQ_END(head);					\
-	    (var) = SIMPLEQ_NEXT(var, field))
+#define SIMPLEQ_FOREACH(var, head, field)                \
+    for((var) = SIMPLEQ_FIRST(head);                \
+        (var) != SIMPLEQ_END(head);                    \
+        (var) = SIMPLEQ_NEXT(var, field))
 
 /*
- * Simple queue functions.
+ * åˆå§‹åŒ–ä¸€ä¸ªå°¾é˜Ÿåˆ—. 
  */
-#define	SIMPLEQ_INIT(head) do {						\
-	(head)->sqh_first = NULL;					\
-	(head)->sqh_last = &(head)->sqh_first;				\
-} while (0)
-
-#define SIMPLEQ_INSERT_HEAD(head, elm, field) do {			\
-	if (((elm)->field.sqe_next = (head)->sqh_first) == NULL)	\
-		(head)->sqh_last = &(elm)->field.sqe_next;		\
-	(head)->sqh_first = (elm);					\
-} while (0)
-
-#define SIMPLEQ_INSERT_TAIL(head, elm, field) do {			\
-	(elm)->field.sqe_next = NULL;					\
-	*(head)->sqh_last = (elm);					\
-	(head)->sqh_last = &(elm)->field.sqe_next;			\
-} while (0)
-
-#define SIMPLEQ_INSERT_AFTER(head, listelm, elm, field) do {		\
-	if (((elm)->field.sqe_next = (listelm)->field.sqe_next) == NULL)\
-		(head)->sqh_last = &(elm)->field.sqe_next;		\
-	(listelm)->field.sqe_next = (elm);				\
-} while (0)
-
-#define SIMPLEQ_REMOVE_HEAD(head, elm, field) do {			\
-	if (((head)->sqh_first = (elm)->field.sqe_next) == NULL)	\
-		(head)->sqh_last = &(head)->sqh_first;			\
+#define    SIMPLEQ_INIT(head) do {                        \
+    (head)->sqh_first = NULL;                    \
+    (head)->sqh_last = &(head)->sqh_first;                \
 } while (0)
 
 /*
- * Î²¶ÓÁÐ¶¨Òå
+ * åœ¨é˜Ÿåˆ—å¤´éƒ¨æ’å…¥ä¸€ä¸ª(ä¸šåŠ¡)èŠ‚ç‚¹(åœ¨å°¾é˜Ÿåˆ—å¤´èŠ‚ç‚¹åŽæ’å…¥ä¸€ä¸ªèŠ‚ç‚¹). 
  */
- //Î²¶ÓÁÐÍ·½Úµã
-#define TAILQ_HEAD(name, type)						\
-struct name {								\
-	struct type *tqh_first;	/* first element */			\
-	struct type **tqh_last;	/* addr of last next element */		\
+#define SIMPLEQ_INSERT_HEAD(head, elm, field) do {            \
+    if (((elm)->field.sqe_next = (head)->sqh_first) == NULL)    \
+        (head)->sqh_last = &(elm)->field.sqe_next;        \
+    (head)->sqh_first = (elm);                    \
+} while (0)
+
+/*
+ * åœ¨é˜Ÿåˆ—å°¾éƒ¨æ’å…¥ä¸€ä¸ª(ä¸šåŠ¡)èŠ‚ç‚¹. 
+ */
+#define SIMPLEQ_INSERT_TAIL(head, elm, field) do {            \
+    (elm)->field.sqe_next = NULL;                    \
+    *(head)->sqh_last = (elm);                    \
+    (head)->sqh_last = &(elm)->field.sqe_next;            \
+} while (0)
+
+/*
+ * åœ¨æŒ‡å®šèŠ‚ç‚¹ä¹‹åŽæ’å…¥ä¸€ä¸ªèŠ‚ç‚¹
+ */
+#define SIMPLEQ_INSERT_AFTER(head, listelm, elm, field) do {        \
+    if (((elm)->field.sqe_next = (listelm)->field.sqe_next) == NULL)\
+        (head)->sqh_last = &(elm)->field.sqe_next;        \
+    (listelm)->field.sqe_next = (elm);                \
+} while (0)
+
+/*
+ * ä»Žé˜Ÿåˆ—å¤´éƒ¨åˆ é™¤ä¸€ä¸ªèŠ‚ç‚¹.
+ */
+#define SIMPLEQ_REMOVE_HEAD(head, elm, field) do {            \
+    if (((head)->sqh_first = (elm)->field.sqe_next) == NULL)    \
+        (head)->sqh_last = &(head)->sqh_first;            \
+} while (0)
+
+
+/**************************************************************************************************/
+
+
+/*
+ * å°¾é˜Ÿåˆ—å®šä¹‰
+ */
+ //å°¾é˜Ÿåˆ—å¤´èŠ‚ç‚¹
+#define TAILQ_HEAD(name, type)                        \
+struct name {                                \
+    struct type *tqh_first;    /* first element */            \
+    struct type **tqh_last;    /* addr of last next element */        \
 }
 
-//Î²¶ÓÁÐÍ·³õÊ¼»¯
-#define TAILQ_HEAD_INITIALIZER(head)	{ NULL, &(head).tqh_first }
+//å°¾é˜Ÿåˆ—å¤´åˆå§‹åŒ–
+#define TAILQ_HEAD_INITIALIZER(head)    { NULL, &(head).tqh_first }
 
-//Î²¶ÓÁÐÍ·ÌõÄ¿¡£ÓÃÓÚ¶¨ÒåÒ»¸öÎ²¶ÓÁÐÌõÄ¿£­£­ÀàÐÍÎªtype
-//¸Ã½á¹¹ÌåÊÇÒ»¸öÄäÃû½á¹¹Ìå¡£ËüÒ»°ã¶¼ÊÇÁíÍâÒ»¸ö½á¹¹Ìå»òÕß¹²ÓÃÌåµÄ³ÉÔ±  
-#define TAILQ_ENTRY(type)						\
-struct {								\
-	struct type *tqe_next;	/* Ö¸ÏòÏÂÒ»¸öÔªËØ */			\
-	/* Ö¸ÏòÉÏÒ»¸öÔªËØµÄtqe_next×Ö¶Î£¬tqe_nextÊÇTAILQ_ENTRYµÄµÚÒ»¸öÔªËØ(½á¹¹ÌåµÚÒ»¸öÔªËØµÄµØÖ·ÖµµÈÓÚ½á¹¹ÌåµÄµØÖ·),
-	  ËùÒÔÍ¨¹ýËü¿ÉÒÔµÃµ½Ç°Ò»¸ö½ÚµãµÄµØÖ·*/  \
-	struct type **tqe_prev;		\
+/*
+ * å°¾é˜Ÿåˆ—ä½¿ç”¨æ–¹æ³•:é€šè¿‡åœ¨ä¸šåŠ¡èŠ‚ç‚¹åŒ…å«ä¸€ä¸ªå°¾é˜Ÿåˆ—èŠ‚ç‚¹,æ¥å°†ä¸šåŠ¡èŠ‚ç‚¹åŠ å…¥é˜Ÿåˆ—---è¿™å„¿æœ‰ç‚¹åƒlinuxçš„é“¾è¡¨.
+ 
+   è¯¥å®žçŽ°ä¸­ä¸šåŠ¡èŠ‚ç‚¹ä¸­éœ€è¦ä¸€ä¸ªå°¾é˜Ÿåˆ—èŠ‚ç‚¹æˆå‘˜å˜é‡field(å¯ä»¥å–å…¶å®ƒå˜é‡å).
+   å¦‚ä¸‹,å®šä¹‰ä¸€ä¸ªä¸šåŠ¡èŠ‚ç‚¹:
+   struct BusinessNode{
+    type data;
+
+    TAILQ_HEAD(BusinessNode_TatlQ_Head, BusinessNode); //å®šä¹‰ä¸€ä¸ªBusinessNode_TatlQ_Headç±»åž‹çš„å°¾é˜Ÿåˆ—ç±»åž‹.
+    BusinessNode_TatlQ_Head field; //BusinessNodeé€šè¿‡è¯¥å­—æ®µåŠ å…¥å°¾é˜Ÿåˆ—ä¸­
+   }
+   
+ */
+ 
+
+//å°¾é˜Ÿåˆ—å¤´æ¡ç›®ã€‚ç”¨äºŽå®šä¹‰ä¸€ä¸ªå°¾é˜Ÿåˆ—æ¡ç›®ï¼ï¼typeä¸ºä¸šåŠ¡èŠ‚ç‚¹çš„ç±»åž‹(å¦‚BusinessNode)
+//è¯¥ç»“æž„ä½“æ˜¯ä¸€ä¸ªåŒ¿åç»“æž„ä½“(å…¶ç»“æž„ä¸Žå°¾é˜Ÿåˆ—å¤´ä¸€è‡´,æ‰€ä»¥å¯å°†å…¶è½¬æ¢ä¸ºå°¾é˜Ÿåˆ—å¤´è¿›è¡Œæ“ä½œ)ã€‚
+//å®ƒä¸€èˆ¬éƒ½æ˜¯å¦å¤–ä¸€ä¸ªç»“æž„ä½“æˆ–è€…å…±ç”¨ä½“çš„æˆå‘˜.  
+#define TAILQ_ENTRY(type)                        \
+struct {                                \
+    struct type *tqe_next;    /* æŒ‡å‘ä¸‹ä¸€ä¸ªä¸šåŠ¡èŠ‚ç‚¹(æ³¨æ„è¯¥æŒ‡é’ˆæŒ‡å‘çš„æ˜¯ä¸šåŠ¡èŠ‚ç‚¹businessNode) */            \
+    
+    /*æŒ‡å‘ä¸Šä¸€ä¸ªä¸šåŠ¡èŠ‚ç‚¹çš„field.tqe_nextå­—æ®µ(å­˜æ”¾çš„æ˜¯ä¸Šä¸€ä¸ªä¸šåŠ¡èŠ‚ç‚¹field.tqe_nextçš„åœ°å€ -- &preBusinessNode.field.tqe_next).
+      å› ä¸ºtqe_nextæ˜¯TAILQ_ENTRYçš„ç¬¬ä¸€ä¸ªå…ƒç´ , æ‰€ä»¥field.tqe_nextçš„åœ°å€å€¼ç­‰äºŽfieldçš„åœ°å€.
+      ç”±äºŽå½“å‰èŠ‚ç‚¹çš„tqe_prevå­˜æ”¾çš„æ˜¯ä¸Šä¸€ä¸ªèŠ‚ç‚¹çš„tqe_nextçš„åœ°å€,è€Œä¸Šä¸€ä¸ªtqe_nextä¸­å­˜æ”¾çš„æ˜¯ä¸‹ä¸€ä¸ª(å½“å‰)ä¸šåŠ¡èŠ‚ç‚¹çš„åœ°å€;
+      æ‰€ä»¥å½“å‰èŠ‚ç‚¹çš„*tqe_prevä¸­å­˜æ”¾çš„æ˜¯å½“å‰ä¸šåŠ¡çš„åœ°å€..
+      */  \
+    struct type **tqe_prev;        \
+}
+
+ //èŽ·å–é˜Ÿåˆ—headçš„é¦–å…ƒç´ (çš„åœ°å€)
+#define    TAILQ_FIRST(head)        ((head)->tqh_first)
+#define    TAILQ_END(head)            NULL
+//æ ¹æ®elmå…ƒç´ çš„fieldå­—æ®µæ¥èŽ·å–å®ƒçš„ä¸‹ä¸€ä¸ªèŠ‚ç‚¹(çš„åœ°å€),fieldå­—æ®µæ˜¯TAILQ_ENTRY(type)ç±»åž‹çš„
+#define    TAILQ_NEXT(elm, field)        ((elm)->field.tqe_next)
+
+/*èŽ·å–é˜Ÿåˆ—çš„æœ€åŽä¸€ä¸ªä¸šåŠ¡èŠ‚ç‚¹(çš„åœ°å€),headä¸ºæŒ‡å‘é˜Ÿåˆ—çš„å¤´ç»“ç‚¹çš„æŒ‡é’ˆ,headnameæ˜¯é˜Ÿåˆ—å¤´ç»“ç‚¹çš„ç±»åž‹å
+  è¿™é‡Œåˆ©ç”¨äº†TAILQ_HEADä¸ŽTAILQ_ENTRYç»“æž„çš„ä¸€è‡´æ€§,å½“å‰ä¸šåŠ¡èŠ‚ç‚¹çš„åœ°å€å¯é€šè¿‡ä¸Šä¸€ä¸ªèŠ‚ç‚¹çš„tqe_nextæ¥èŽ·å–(ä¹Ÿå¯é€šè¿‡å½“å‰èŠ‚ç‚¹çš„*tqe_prevæ¥èŽ·å–).
+  */
+#define TAILQ_LAST(head, headname)                    \
+    (*(((struct headname *)((head)->tqh_last))->tqh_last))
+
+/*èŽ·å–é˜Ÿåˆ—elmçš„å‰ä¸€ä¸ªå…ƒç´ çš„åœ°å€*/
+#define TAILQ_PREV(elm, headname, field)                \
+    (*(((struct headname *)((elm)->field.tqe_prev))->tqh_last))
+//åˆ¤æ–­é˜Ÿåˆ—æ˜¯å¦ä¸ºç©º
+#define    TAILQ_EMPTY(head)                        \
+    (TAILQ_FIRST(head) == TAILQ_END(head))
+
+//éåŽ†é˜Ÿåˆ—
+#define TAILQ_FOREACH(var, head, field)                    \
+    for((var) = TAILQ_FIRST(head);                    \
+        (var) != TAILQ_END(head);                    \
+        (var) = TAILQ_NEXT(var, field))
+//åå‘éåŽ†é˜Ÿåˆ—
+#define TAILQ_FOREACH_REVERSE(var, head, headname, field)        \
+    for((var) = TAILQ_LAST(head, headname);                \
+        (var) != TAILQ_END(head);                    \
+        (var) = TAILQ_PREV(var, headname, field))
+
+/*
+ å°¾é˜Ÿåˆ—å‡½æ•° .
+ */
+ //åˆå§‹åŒ–é˜Ÿåˆ—å¤´èŠ‚ç‚¹,head:æŒ‡å‘å¤´èŠ‚ç‚¹çš„æŒ‡é’ˆ
+#define    TAILQ_INIT(head) do {                        \
+    (head)->tqh_first = NULL;                    \
+    (head)->tqh_last = &(head)->tqh_first;                \
+} while (0)
+
+//åœ¨é˜Ÿåˆ—çš„å¤´éƒ¨æ’å…¥ä¸€ä¸ªå…ƒç´ ,
+//head:æŒ‡å‘é˜Ÿåˆ—å¤´èŠ‚ç‚¹çš„æŒ‡é’ˆ,elm:æŒ‡å‘è¦æ’å…¥çš„å…ƒç´ ,field:elmçš„æ’å…¥æ“ä½œæ˜¯é€šè¿‡å®ƒçš„è¿™ä¸ªå­—æ®µæ¥å®Œæˆçš„,å®ƒæ˜¯TAILQ_ENTRY(type)ç±»åž‹çš„
+#define TAILQ_INSERT_HEAD(head, elm, field) do {            \
+    if (((elm)->field.tqe_next = (head)->tqh_first) != NULL)    \
+        (head)->tqh_first->field.tqe_prev = &(elm)->field.tqe_next;   \
+    else                                \
+        (head)->tqh_last = &(elm)->field.tqe_next;        \
+    (head)->tqh_first = (elm);                    \
+    (elm)->field.tqe_prev = &(head)->tqh_first;            \
+} while (0)
+
+//åœ¨é˜Ÿåˆ—çš„å°¾éƒ¨æ’å…¥ä¸€ä¸ªå…ƒç´ ,
+//head:æŒ‡å‘é˜Ÿåˆ—å¤´èŠ‚ç‚¹çš„æŒ‡é’ˆ,elm:æŒ‡å‘è¦æ’å…¥çš„å…ƒç´ ,field:æ’å…¥æ“ä½œæ˜¯é€šè¿‡è¿™ä¸ªå­—æ®µæ¥å®Œæˆçš„,å®ƒæ˜¯TAILQ_ENTRY(type)ç±»åž‹çš„
+#define TAILQ_INSERT_TAIL(head, elm, field) do {            \
+    (elm)->field.tqe_next = NULL;                    \
+    (elm)->field.tqe_prev = (head)->tqh_last;            \
+    *(head)->tqh_last = (elm);                    \
+    (head)->tqh_last = &(elm)->field.tqe_next;            \
+} while (0)
+
+//åœ¨headé˜Ÿåˆ—çš„listelmèŠ‚ç‚¹ä¹‹åŽæ’å…¥ä¸€ä¸ªelmèŠ‚ç‚¹, field:æ˜¯elmä¸­åŒ…å«TAILQ_ENTRY(type)ç»“æž„çš„å­—æ®µ
+#define TAILQ_INSERT_AFTER(head, listelm, elm, field) do {        \
+    if (((elm)->field.tqe_next = (listelm)->field.tqe_next) != NULL)\
+        (elm)->field.tqe_next->field.tqe_prev =            \
+            &(elm)->field.tqe_next;                \
+    else                                \
+        (head)->tqh_last = &(elm)->field.tqe_next;        \
+    (listelm)->field.tqe_next = (elm);                \
+    (elm)->field.tqe_prev = &(listelm)->field.tqe_next;        \
+} while (0)
+
+//åœ¨headé˜Ÿåˆ—çš„listelmèŠ‚ç‚¹ä¹‹å‰æ’å…¥ä¸€ä¸ªelmèŠ‚ç‚¹, field:æ˜¯elmä¸­åŒ…å«TAILQ_ENTRY(type)ç»“æž„çš„å­—æ®µ
+#define    TAILQ_INSERT_BEFORE(listelm, elm, field) do {            \
+    (elm)->field.tqe_prev = (listelm)->field.tqe_prev;        \
+    (elm)->field.tqe_next = (listelm);                \
+    *(listelm)->field.tqe_prev = (elm);                \
+    (listelm)->field.tqe_prev = &(elm)->field.tqe_next;        \
+} while (0)
+
+//ä»Žheadé˜Ÿåˆ—ä¸­ç§»é™¤elmèŠ‚ç‚¹, field:æ˜¯elmä¸­åŒ…å«TAILQ_ENTRY(type)ç»“æž„çš„å­—æ®µ
+#define TAILQ_REMOVE(head, elm, field) do {                \
+    if (((elm)->field.tqe_next) != NULL)                \
+        (elm)->field.tqe_next->field.tqe_prev =            \
+            (elm)->field.tqe_prev;                \
+    else                                \
+        (head)->tqh_last = (elm)->field.tqe_prev;        \
+    *(elm)->field.tqe_prev = (elm)->field.tqe_next;            \
+} while (0)
+
+//å°†headé˜Ÿåˆ—ä¸­çš„elmèŠ‚ç‚¹ç”¨elm2èŠ‚ç‚¹æ›¿ä»£, field:æ˜¯elmä¸­åŒ…å«TAILQ_ENTRY(type)ç»“æž„çš„å­—æ®µ
+#define TAILQ_REPLACE(head, elm, elm2, field) do {            \
+    if (((elm2)->field.tqe_next = (elm)->field.tqe_next) != NULL)    \
+        (elm2)->field.tqe_next->field.tqe_prev =        \
+            &(elm2)->field.tqe_next;                \
+    else                                \
+        (head)->tqh_last = &(elm2)->field.tqe_next;        \
+    (elm2)->field.tqe_prev = (elm)->field.tqe_prev;            \
+    *(elm2)->field.tqe_prev = (elm2);                \
+} while (0)
+
+
+/*************************************************************************************/
+
+/*
+ *å¾ªçŽ¯é˜Ÿåˆ—å®šä¹‰ã€‚
+ */
+ //å¾ªçŽ¯é˜Ÿåˆ—å¤´
+#define CIRCLEQ_HEAD(name, type)                    \
+struct name {                                \
+    struct type *cqh_first;        /* first element */        \
+    struct type *cqh_last;        /* last element */        \
+}
+
+//å¾ªçŽ¯åˆå§‹åŒ–é˜Ÿåˆ—å¤´
+#define CIRCLEQ_HEAD_INITIALIZER(head)                    \
+    { CIRCLEQ_END(&head), CIRCLEQ_END(&head) }
+
+//å¾ªçŽ¯é˜Ÿåˆ—æ¡ç›®
+#define CIRCLEQ_ENTRY(type)                        \
+struct {                                \
+    struct type *cqe_next;        /* next element */        \
+    struct type *cqe_prev;        /* previous element */        \
 }
 
 /*
- * Î²¶ÓÁÐ·ÃÎÊ·½·¨
-   ²Ù×÷ÖÐÐèÒªfield²ÎÊý,ÊÇÒòÎªÎÒÃÇµÄ¶ÓÁÐÊÇ°üº¬ÔÚÒµÎñ½ÚµãÖ®ÖÐµÄ£¬
-   Õâ¸ö²ÎÊý¶ÔÓ¦µÄ¾ÍÊÇ½ÚµãÊý¾Ý½á¹¹ÖÐµÄÁ´±í×Ö¶Î
-   ---Õâ¶ùÓÐµãÏñlinuxµÄÁ´±í
+ * å¾ªçŽ¯é˜Ÿåˆ—çš„è®¿é—®æ–¹æ³•
  */
- //»ñÈ¡¶ÓÁÐheadµÄÊ×ÔªËØ(µÄµØÖ·)
-#define	TAILQ_FIRST(head)		((head)->tqh_first)
-#define	TAILQ_END(head)			NULL
-//¸ù¾ÝelmÔªËØµÄfield×Ö¶ÎÀ´»ñÈ¡ËüµÄÏÂÒ»¸ö½Úµã(µÄµØÖ·),field×Ö¶ÎÊÇTAILQ_ENTRY(type)ÀàÐÍµÄ
-#define	TAILQ_NEXT(elm, field)		((elm)->field.tqe_next)
-/*»ñÈ¡¶ÓÁÐµÄ×îºóÒ»¸ö½Úµã(µÄµØÖ·),headÎªÖ¸Ïò¶ÓÁÐµÄÍ·½áµãµÄÖ¸Õë,headnameÊÇ¶ÓÁÐÍ·½áµãµÄÀàÐÍÃû
-  ÕâÀïÀûÓÃÁËTAILQ_HEADÓëTAILQ_ENTRY½á¹¹µÄÒ»ÖÂÐÔ,ÇÒtqe_nextÊÇTAILQ_ENTRYµÄµÚÒ»¸öÔªËØ(½á¹¹ÌåµÚÒ»¸öÔªËØµÄµØÖ·ÖµµÈÓÚ½á¹¹ÌåµÄµØÖ·)*/
-#define TAILQ_LAST(head, headname)					\
-	(*(((struct headname *)((head)->tqh_last))->tqh_last))
-/* XXX */
-/*»ñÈ¡¶ÓÁÐµÄ×îºóÒ»¸ö½Úµã(µÄµØÖ·),headÎªÖ¸Ïò¶ÓÁÐµÄÍ·½áµãµÄÖ¸Õë,headnameÊÇ¶ÓÁÐÍ·½áµãµÄÀàÐÍÃû,fieldÊÇelmµÄÒ»¸ö×Ö¶Î£¬ËüÊÇTAILQ_ENTRY(type)ÀàÐÍµÄ
-  ÕâÀïÀûÓÃÁËTAILQ_HEADÓëTAILQ_ENTRY½á¹¹µÄÒ»ÖÂÐÔ,ÇÒtqe_nextÊÇTAILQ_ENTRYµÄµÚÒ»¸öÔªËØ(½á¹¹ÌåµÚÒ»¸öÔªËØµÄµØÖ·ÖµµÈÓÚ½á¹¹ÌåµÄµØÖ·)*/
-#define TAILQ_PREV(elm, headname, field)				\
-	(*(((struct headname *)((elm)->field.tqe_prev))->tqh_last))
-//ÅÐ¶Ï¶ÓÁÐÊÇ·ñÎª¿Õ
-#define	TAILQ_EMPTY(head)						\
-	(TAILQ_FIRST(head) == TAILQ_END(head))
+ //ç¬¬ä¸€ä¸ªèŠ‚ç‚¹
+#define    CIRCLEQ_FIRST(head)        ((head)->cqh_first)
+//æœ€åŽä¸€ä¸ªèŠ‚ç‚¹
+#define    CIRCLEQ_LAST(head)        ((head)->cqh_last)
+//ç»“æŸï¼Œç”¨äºŽéåŽ†
+#define    CIRCLEQ_END(head)        ((void *)(head))
+//èŽ·å–èŠ‚ç‚¹elmçš„ä¸‹ä¸€ä¸ªèŠ‚ç‚¹,fieldæ˜¯elmç»“æž„ä¸­åŒ…å«çš„CIRCLEQ_ENTRY(type)å­—æ®µ,elmçš„é“¾ç”±fieldå­—æ®µæž„æˆ
+#define    CIRCLEQ_NEXT(elm, field)    ((elm)->field.cqe_next)
+//èŽ·å–èŠ‚ç‚¹elmçš„å‰ä¸€ä¸ªèŠ‚ç‚¹
+#define    CIRCLEQ_PREV(elm, field)    ((elm)->field.cqe_prev)
+//å¾ªçŽ¯é˜Ÿåˆ—æ˜¯å¦ä¸ºç©º
+#define    CIRCLEQ_EMPTY(head)                        \
+    (CIRCLEQ_FIRST(head) == CIRCLEQ_END(head))
 
-//±éÀú¶ÓÁÐ,
-#define TAILQ_FOREACH(var, head, field)					\
-	for((var) = TAILQ_FIRST(head);					\
-	    (var) != TAILQ_END(head);					\
-	    (var) = TAILQ_NEXT(var, field))
-//·´Ïò±éÀú¶ÓÁÐ
-#define TAILQ_FOREACH_REVERSE(var, head, headname, field)		\
-	for((var) = TAILQ_LAST(head, headname);				\
-	    (var) != TAILQ_END(head);					\
-	    (var) = TAILQ_PREV(var, headname, field))
+//éåŽ†å¾ªçŽ¯é˜Ÿåˆ—
+#define CIRCLEQ_FOREACH(var, head, field)                \
+    for((var) = CIRCLEQ_FIRST(head);                \
+        (var) != CIRCLEQ_END(head);                    \
+        (var) = CIRCLEQ_NEXT(var, field))
+
+//åå‘éåŽ†å¾ªçŽ¯é˜Ÿåˆ—
+#define CIRCLEQ_FOREACH_REVERSE(var, head, field)            \
+    for((var) = CIRCLEQ_LAST(head);                    \
+        (var) != CIRCLEQ_END(head);                    \
+        (var) = CIRCLEQ_PREV(var, field))
 
 /*
- Î²¶ÓÁÐº¯Êý .
+ * å¾ªçŽ¯é˜Ÿåˆ—çš„åŠŸèƒ½.
  */
- //³õÊ¼»¯¶ÓÁÐÍ·½Úµã,head:Ö¸ÏòÍ·½ÚµãµÄÖ¸Õë
-#define	TAILQ_INIT(head) do {						\
-	(head)->tqh_first = NULL;					\
-	(head)->tqh_last = &(head)->tqh_first;				\
+ //åˆå§‹å¾ªçŽ¯é˜Ÿåˆ—,ä½¿å¤´èŠ‚ç‚¹çš„cqh_first,cqh_lastæŒ‡å‘å®ƒè‡ªèº«
+#define    CIRCLEQ_INIT(head) do {                        \
+    (head)->cqh_first = CIRCLEQ_END(head);                \
+    (head)->cqh_last = CIRCLEQ_END(head);                \
 } while (0)
 
-//ÔÚ¶ÓÁÐµÄÍ·²¿²åÈëÒ»¸öÔªËØ,
-//head:Ö¸Ïò¶ÓÁÐÍ·½ÚµãµÄÖ¸Õë,elm:Ö¸ÏòÒª²åÈëµÄÔªËØ,field:elmµÄ²åÈë²Ù×÷ÊÇÍ¨¹ýËüµÄÕâ¸ö×Ö¶ÎÀ´Íê³ÉµÄ,ËüÊÇTAILQ_ENTRY(type)ÀàÐÍµÄ
-#define TAILQ_INSERT_HEAD(head, elm, field) do {			\
-	if (((elm)->field.tqe_next = (head)->tqh_first) != NULL)	\
-		(head)->tqh_first->field.tqe_prev =	  &(elm)->field.tqe_next;				\
-	else								\
-		(head)->tqh_last = &(elm)->field.tqe_next;		\
-	(head)->tqh_first = (elm);					\
-	(elm)->field.tqe_prev = &(head)->tqh_first;			\
+//åœ¨listelmä¹‹åŽæ’å…¥elmã€‚headä¸ºæŒ‡å‘å¾ªçŽ¯é˜Ÿåˆ—å¤´èŠ‚ç‚¹çš„æŒ‡é’ˆ,fieldæ˜¯elmç»“æž„ä¸­åŒ…å«çš„CIRCLEQ_ENTRY(type)å­—æ®µ,elmçš„é“¾ç”±fieldå­—æ®µæž„æˆ
+#define CIRCLEQ_INSERT_AFTER(head, listelm, elm, field) do {        \
+    (elm)->field.cqe_next = (listelm)->field.cqe_next;        \
+    (elm)->field.cqe_prev = (listelm);                \
+    if ((listelm)->field.cqe_next == CIRCLEQ_END(head))        \
+        (head)->cqh_last = (elm);                \
+    else                                \
+        (listelm)->field.cqe_next->field.cqe_prev = (elm);    \
+    (listelm)->field.cqe_next = (elm);                \
 } while (0)
 
-//ÔÚ¶ÓÁÐµÄÎ²²¿²åÈëÒ»¸öÔªËØ,
-//head:Ö¸Ïò¶ÓÁÐÍ·½ÚµãµÄÖ¸Õë,elm:Ö¸ÏòÒª²åÈëµÄÔªËØ,field:²åÈë²Ù×÷ÊÇÍ¨¹ýÕâ¸ö×Ö¶ÎÀ´Íê³ÉµÄ,ËüÊÇTAILQ_ENTRY(type)ÀàÐÍµÄ
-#define TAILQ_INSERT_TAIL(head, elm, field) do {			\
-	(elm)->field.tqe_next = NULL;					\
-	(elm)->field.tqe_prev = (head)->tqh_last;			\
-	*(head)->tqh_last = (elm);					\
-	(head)->tqh_last = &(elm)->field.tqe_next;			\
+//åœ¨listelmä¹‹å‰æ’å…¥elmã€‚headä¸ºæŒ‡å‘å¾ªçŽ¯é˜Ÿåˆ—å¤´èŠ‚ç‚¹çš„æŒ‡é’ˆ,fieldæ˜¯elmç»“æž„ä¸­åŒ…å«çš„CIRCLEQ_ENTRY(type)å­—æ®µ,elmçš„é“¾ç”±fieldå­—æ®µæž„æˆ
+#define CIRCLEQ_INSERT_BEFORE(head, listelm, elm, field) do {        \
+    (elm)->field.cqe_next = (listelm);                \
+    (elm)->field.cqe_prev = (listelm)->field.cqe_prev;        \
+    if ((listelm)->field.cqe_prev == CIRCLEQ_END(head))        \
+        (head)->cqh_first = (elm);                \
+    else                                \
+        (listelm)->field.cqe_prev->field.cqe_next = (elm);    \
+    (listelm)->field.cqe_prev = (elm);                \
 } while (0)
 
-//ÔÚhead¶ÓÁÐµÄlistelm½ÚµãÖ®ºó²åÈëÒ»¸öelm½Úµã, field:ÊÇelmÖÐ°üº¬TAILQ_ENTRY(type)½á¹¹µÄ×Ö¶Î
-#define TAILQ_INSERT_AFTER(head, listelm, elm, field) do {		\
-	if (((elm)->field.tqe_next = (listelm)->field.tqe_next) != NULL)\
-		(elm)->field.tqe_next->field.tqe_prev =			\
-		    &(elm)->field.tqe_next;				\
-	else								\
-		(head)->tqh_last = &(elm)->field.tqe_next;		\
-	(listelm)->field.tqe_next = (elm);				\
-	(elm)->field.tqe_prev = &(listelm)->field.tqe_next;		\
+//åœ¨å¾ªçŽ¯é˜Ÿåˆ—çš„å¤´éƒ¨æ’å…¥èŠ‚ç‚¹elm
+#define CIRCLEQ_INSERT_HEAD(head, elm, field) do {            \
+    (elm)->field.cqe_next = (head)->cqh_first;            \
+    (elm)->field.cqe_prev = CIRCLEQ_END(head);            \
+    if ((head)->cqh_last == CIRCLEQ_END(head))            \
+        (head)->cqh_last = (elm);                \
+    else                                \
+        (head)->cqh_first->field.cqe_prev = (elm);        \
+    (head)->cqh_first = (elm);                    \
 } while (0)
 
-//ÔÚhead¶ÓÁÐµÄlistelm½ÚµãÖ®Ç°²åÈëÒ»¸öelm½Úµã, field:ÊÇelmÖÐ°üº¬TAILQ_ENTRY(type)½á¹¹µÄ×Ö¶Î
-#define	TAILQ_INSERT_BEFORE(listelm, elm, field) do {			\
-	(elm)->field.tqe_prev = (listelm)->field.tqe_prev;		\
-	(elm)->field.tqe_next = (listelm);				\
-	*(listelm)->field.tqe_prev = (elm);				\
-	(listelm)->field.tqe_prev = &(elm)->field.tqe_next;		\
+//åœ¨å¾ªçŽ¯é˜Ÿåˆ—çš„å°¾éƒ¨æ’å…¥èŠ‚ç‚¹elm
+#define CIRCLEQ_INSERT_TAIL(head, elm, field) do {            \
+    (elm)->field.cqe_next = CIRCLEQ_END(head);            \
+    (elm)->field.cqe_prev = (head)->cqh_last;            \
+    if ((head)->cqh_first == CIRCLEQ_END(head))            \
+        (head)->cqh_first = (elm);                \
+    else                                \
+        (head)->cqh_last->field.cqe_next = (elm);        \
+    (head)->cqh_last = (elm);                    \
 } while (0)
 
-//´Óhead¶ÓÁÐÖÐÒÆ³ýelm½Úµã, field:ÊÇelmÖÐ°üº¬TAILQ_ENTRY(type)½á¹¹µÄ×Ö¶Î
-#define TAILQ_REMOVE(head, elm, field) do {				\
-	if (((elm)->field.tqe_next) != NULL)				\
-		(elm)->field.tqe_next->field.tqe_prev =			\
-		    (elm)->field.tqe_prev;				\
-	else								\
-		(head)->tqh_last = (elm)->field.tqe_prev;		\
-	*(elm)->field.tqe_prev = (elm)->field.tqe_next;			\
+//ä»Žå¾ªçŽ¯é˜Ÿåˆ—ä¸­ç§»é™¤èŠ‚ç‚¹elm
+#define    CIRCLEQ_REMOVE(head, elm, field) do {                \
+    if ((elm)->field.cqe_next == CIRCLEQ_END(head))            \
+        (head)->cqh_last = (elm)->field.cqe_prev;        \
+    else                                \
+        (elm)->field.cqe_next->field.cqe_prev =            \
+            (elm)->field.cqe_prev;                \
+    if ((elm)->field.cqe_prev == CIRCLEQ_END(head))            \
+        (head)->cqh_first = (elm)->field.cqe_next;        \
+    else                                \
+        (elm)->field.cqe_prev->field.cqe_next =            \
+            (elm)->field.cqe_next;                \
 } while (0)
 
-//½«head¶ÓÁÐÖÐµÄelm½ÚµãÓÃelm2½ÚµãÌæ´ú, field:ÊÇelmÖÐ°üº¬TAILQ_ENTRY(type)½á¹¹µÄ×Ö¶Î
-#define TAILQ_REPLACE(head, elm, elm2, field) do {			\
-	if (((elm2)->field.tqe_next = (elm)->field.tqe_next) != NULL)	\
-		(elm2)->field.tqe_next->field.tqe_prev =		\
-		    &(elm2)->field.tqe_next;				\
-	else								\
-		(head)->tqh_last = &(elm2)->field.tqe_next;		\
-	(elm2)->field.tqe_prev = (elm)->field.tqe_prev;			\
-	*(elm2)->field.tqe_prev = (elm2);				\
+//å°†å¾ªçŽ¯é˜Ÿåˆ—ä¸­çš„elmæ›¿æ¢ä¸ºelm2
+#define CIRCLEQ_REPLACE(head, elm, elm2, field) do {            \
+    if (((elm2)->field.cqe_next = (elm)->field.cqe_next) ==        \
+        CIRCLEQ_END(head))                        \
+        (head).cqh_last = (elm2);                \
+    else                                \
+        (elm2)->field.cqe_next->field.cqe_prev = (elm2);    \
+    if (((elm2)->field.cqe_prev = (elm)->field.cqe_prev) ==        \
+        CIRCLEQ_END(head))                        \
+        (head).cqh_first = (elm2);                \
+    else                                \
+        (elm2)->field.cqe_prev->field.cqe_next = (elm2);    \
 } while (0)
 
-/*
- *Ñ­»·¶ÓÁÐ¶¨Òå¡£
- */
- //Ñ­»·¶ÓÁÐÍ·
-#define CIRCLEQ_HEAD(name, type)					\
-struct name {								\
-	struct type *cqh_first;		/* first element */		\
-	struct type *cqh_last;		/* last element */		\
-}
-
-//Ñ­»·³õÊ¼»¯¶ÓÁÐÍ·
-#define CIRCLEQ_HEAD_INITIALIZER(head)					\
-	{ CIRCLEQ_END(&head), CIRCLEQ_END(&head) }
-
-//Ñ­»·¶ÓÁÐÌõÄ¿
-#define CIRCLEQ_ENTRY(type)						\
-struct {								\
-	struct type *cqe_next;		/* next element */		\
-	struct type *cqe_prev;		/* previous element */		\
-}
-
-/*
- * Ñ­»·¶ÓÁÐµÄ·ÃÎÊ·½·¨
- */
- //µÚÒ»¸ö½Úµã
-#define	CIRCLEQ_FIRST(head)		((head)->cqh_first)
-//×îºóÒ»¸ö½Úµã
-#define	CIRCLEQ_LAST(head)		((head)->cqh_last)
-//½áÊø£¬ÓÃÓÚ±éÀú
-#define	CIRCLEQ_END(head)		((void *)(head))
-//»ñÈ¡½ÚµãelmµÄÏÂÒ»¸ö½Úµã,fieldÊÇelm½á¹¹ÖÐ°üº¬µÄCIRCLEQ_ENTRY(type)×Ö¶Î,elmµÄÁ´ÓÉfield×Ö¶Î¹¹³É
-#define	CIRCLEQ_NEXT(elm, field)	((elm)->field.cqe_next)
-//»ñÈ¡½ÚµãelmµÄÇ°Ò»¸ö½Úµã
-#define	CIRCLEQ_PREV(elm, field)	((elm)->field.cqe_prev)
-//Ñ­»·¶ÓÁÐÊÇ·ñÎª¿Õ
-#define	CIRCLEQ_EMPTY(head)						\
-	(CIRCLEQ_FIRST(head) == CIRCLEQ_END(head))
-
-//±éÀúÑ­»·¶ÓÁÐ
-#define CIRCLEQ_FOREACH(var, head, field)				\
-	for((var) = CIRCLEQ_FIRST(head);				\
-	    (var) != CIRCLEQ_END(head);					\
-	    (var) = CIRCLEQ_NEXT(var, field))
-
-//·´Ïò±éÀúÑ­»·¶ÓÁÐ
-#define CIRCLEQ_FOREACH_REVERSE(var, head, field)			\
-	for((var) = CIRCLEQ_LAST(head);					\
-	    (var) != CIRCLEQ_END(head);					\
-	    (var) = CIRCLEQ_PREV(var, field))
-
-/*
- * Ñ­»·¶ÓÁÐµÄ¹¦ÄÜ.
- */
- //³õÊ¼Ñ­»·¶ÓÁÐ,Ê¹Í·½ÚµãµÄcqh_first,cqh_lastÖ¸ÏòËü×ÔÉí
-#define	CIRCLEQ_INIT(head) do {						\
-	(head)->cqh_first = CIRCLEQ_END(head);				\
-	(head)->cqh_last = CIRCLEQ_END(head);				\
-} while (0)
-
-//ÔÚlistelmÖ®ºó²åÈëelm¡£headÎªÖ¸ÏòÑ­»·¶ÓÁÐÍ·½ÚµãµÄÖ¸Õë,fieldÊÇelm½á¹¹ÖÐ°üº¬µÄCIRCLEQ_ENTRY(type)×Ö¶Î,elmµÄÁ´ÓÉfield×Ö¶Î¹¹³É
-#define CIRCLEQ_INSERT_AFTER(head, listelm, elm, field) do {		\
-	(elm)->field.cqe_next = (listelm)->field.cqe_next;		\
-	(elm)->field.cqe_prev = (listelm);				\
-	if ((listelm)->field.cqe_next == CIRCLEQ_END(head))		\
-		(head)->cqh_last = (elm);				\
-	else								\
-		(listelm)->field.cqe_next->field.cqe_prev = (elm);	\
-	(listelm)->field.cqe_next = (elm);				\
-} while (0)
-
-//ÔÚlistelmÖ®Ç°²åÈëelm¡£headÎªÖ¸ÏòÑ­»·¶ÓÁÐÍ·½ÚµãµÄÖ¸Õë,fieldÊÇelm½á¹¹ÖÐ°üº¬µÄCIRCLEQ_ENTRY(type)×Ö¶Î,elmµÄÁ´ÓÉfield×Ö¶Î¹¹³É
-#define CIRCLEQ_INSERT_BEFORE(head, listelm, elm, field) do {		\
-	(elm)->field.cqe_next = (listelm);				\
-	(elm)->field.cqe_prev = (listelm)->field.cqe_prev;		\
-	if ((listelm)->field.cqe_prev == CIRCLEQ_END(head))		\
-		(head)->cqh_first = (elm);				\
-	else								\
-		(listelm)->field.cqe_prev->field.cqe_next = (elm);	\
-	(listelm)->field.cqe_prev = (elm);				\
-} while (0)
-
-//ÔÚÑ­»·¶ÓÁÐµÄÍ·²¿²åÈë½Úµãelm
-#define CIRCLEQ_INSERT_HEAD(head, elm, field) do {			\
-	(elm)->field.cqe_next = (head)->cqh_first;			\
-	(elm)->field.cqe_prev = CIRCLEQ_END(head);			\
-	if ((head)->cqh_last == CIRCLEQ_END(head))			\
-		(head)->cqh_last = (elm);				\
-	else								\
-		(head)->cqh_first->field.cqe_prev = (elm);		\
-	(head)->cqh_first = (elm);					\
-} while (0)
-
-//ÔÚÑ­»·¶ÓÁÐµÄÎ²²¿²åÈë½Úµãelm
-#define CIRCLEQ_INSERT_TAIL(head, elm, field) do {			\
-	(elm)->field.cqe_next = CIRCLEQ_END(head);			\
-	(elm)->field.cqe_prev = (head)->cqh_last;			\
-	if ((head)->cqh_first == CIRCLEQ_END(head))			\
-		(head)->cqh_first = (elm);				\
-	else								\
-		(head)->cqh_last->field.cqe_next = (elm);		\
-	(head)->cqh_last = (elm);					\
-} while (0)
-
-//´ÓÑ­»·¶ÓÁÐÖÐÒÆ³ý½Úµãelm
-#define	CIRCLEQ_REMOVE(head, elm, field) do {				\
-	if ((elm)->field.cqe_next == CIRCLEQ_END(head))			\
-		(head)->cqh_last = (elm)->field.cqe_prev;		\
-	else								\
-		(elm)->field.cqe_next->field.cqe_prev =			\
-		    (elm)->field.cqe_prev;				\
-	if ((elm)->field.cqe_prev == CIRCLEQ_END(head))			\
-		(head)->cqh_first = (elm)->field.cqe_next;		\
-	else								\
-		(elm)->field.cqe_prev->field.cqe_next =			\
-		    (elm)->field.cqe_next;				\
-} while (0)
-
-//½«Ñ­»·¶ÓÁÐÖÐµÄelmÌæ»»Îªelm2
-#define CIRCLEQ_REPLACE(head, elm, elm2, field) do {			\
-	if (((elm2)->field.cqe_next = (elm)->field.cqe_next) ==		\
-	    CIRCLEQ_END(head))						\
-		(head).cqh_last = (elm2);				\
-	else								\
-		(elm2)->field.cqe_next->field.cqe_prev = (elm2);	\
-	if (((elm2)->field.cqe_prev = (elm)->field.cqe_prev) ==		\
-	    CIRCLEQ_END(head))						\
-		(head).cqh_first = (elm2);				\
-	else								\
-		(elm2)->field.cqe_prev->field.cqe_next = (elm2);	\
-} while (0)
-
-#endif	/* !SYS_QUEUE_H__ */
+#endif    /* !SYS_QUEUE_H__ */
