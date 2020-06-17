@@ -56,7 +56,7 @@ extern "C" {
  */
 
 /* On a all bufferevents, for reading: used when we have read up to the
-   watermark value.
+   watermark value.   
 
    On a filtering bufferevent, for writing: used when the underlying
    bufferevent's write buffer has been filled up to its watermark
